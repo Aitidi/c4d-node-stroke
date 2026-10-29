@@ -64,3 +64,9 @@ Windows，Cinema 4D 2027.0。组接口的连线操作与精确的节点/端口�
 Windows, Cinema 4D 2027.0. Group interface wires and exact node/port positions depend on this
 build; with other builds they turn themselves off, and the canvas must be scrolled once before
 gestures work.
+
+
+完整使用文档 / User guide
+------------------------
+中文：https://github.com/Aitidi/c4d-node-stroke/blob/main/docs/usage.zh-CN.md
+English: https://github.com/Aitidi/c4d-node-stroke/blob/main/docs/usage.md

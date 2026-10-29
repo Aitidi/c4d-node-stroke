@@ -8,7 +8,7 @@ NodeStroke 让你在 Cinema 4D 节点编辑器里用键盘加划线来连接、�
 
 [观看 MP4 版演示](docs/media/demo.mp4)
 
-下载：见 [Releases](../../releases)。安装方法见压缩包里的 `README.txt`。
+下载：见 [Releases](../../releases)。完整说明见 **[使用文档](docs/usage.zh-CN.md)**。
 
 ## 功能
 

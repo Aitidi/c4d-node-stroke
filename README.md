@@ -8,7 +8,7 @@ NodeStroke lets you connect, cut and tidy wires in the Cinema 4D node editor by 
 
 [Watch the demo as MP4](docs/media/demo.mp4)
 
-Download: see [Releases](../../releases). Installation steps are in the `README.txt` inside the zip.
+Download: see [Releases](../../releases). Full instructions: **[User Guide](docs/usage.md)**.
 
 ## Features
 
