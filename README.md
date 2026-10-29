@@ -4,6 +4,10 @@ English | [简体中文](README.zh-CN.md)
 
 NodeStroke lets you connect, cut and tidy wires in the Cinema 4D node editor by drawing strokes while holding a key. It is a C++ SDK plugin for Cinema 4D 2027.0 on Windows (Redshift node materials).
 
+![NodeStroke demo: drawing connections, cutting wires and adding a Displacement node in the node editor](docs/media/demo.gif)
+
+[Watch the demo as MP4](docs/media/demo.mp4)
+
 Download: see [Releases](../../releases). Installation steps are in the `README.txt` inside the zip.
 
 ## Features

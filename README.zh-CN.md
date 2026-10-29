@@ -4,6 +4,10 @@
 
 NodeStroke 让你在 Cinema 4D 节点编辑器里用键盘加划线来连接、切断和整理连线。它是 C++ SDK 插件，支持 Windows 上的 Cinema 4D 2027.0（Redshift 节点材质）。
 
+![NodeStroke 演示：在节点编辑器中绘制连接、切断连线、自动添加 Displacement 节点](docs/media/demo.gif)
+
+[观看 MP4 版演示](docs/media/demo.mp4)
+
 下载：见 [Releases](../../releases)。安装方法见压缩包里的 `README.txt`。
 
 ## 功能
