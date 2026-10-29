@@ -43,7 +43,7 @@ These commands are not in the Extensions menu. Find them in the Commander or giv
 | `NodeStroke: Edit Connection Rules` | Rules window: list, add from selected ports and delete rules (stored in `<preferences folder>/nodestroke_rules.txt`) |
 | `NodeStroke: Toggle Canvas Gestures` | The same switch as "Enable Gestures" in the preferences |
 
-Ports are chosen in this order: custom rules, then a free input of the same type family (such as col3/col4), then any free connectable input, then replacing an occupied input (fan in never replaces). Ports are tried in the order the node editor shows them. Every change runs in one graph transaction and can be undone.
+The commands choose ports in this order: custom rules, then Redshift workflow rules (textures are matched by keywords in their file name), then a free input of the same type family (such as col3/col4), then any free connectable input, then replacing an occupied input (fan in never replaces). Strokes choose differently; see [How ports are chosen](docs/usage.md#8-how-ports-are-chosen). Every change runs in one graph transaction and can be undone.
 
 ## How it works
 

@@ -88,29 +88,44 @@ The helper is placed one node slot to the right of the source node, level with i
 
 ## 8. How ports are chosen
 
-When the stroke does not start or end on a port row, NodeStroke picks ports in this order:
+Strokes and the connect commands choose ports in a different order.
+
+### Strokes (hold I)
 
 1. **Exact ports** under the start and end of the stroke.
 2. **Your connection rules** for this pair of node types (see below).
 3. The **first free input** of the target, from top to bottom as the node shows it, that the source can connect to.
-4. **Redshift workflow rules** based on the source. Textures are recognized by keywords in their file name:
-
-   | File name contains | Goes to |
-   | --- | --- |
-   | `normal`, `nrm`, `_nor` | Bump (through a Bump Map node) |
-   | `disp` | Output Displacement (through a Displacement node) |
-   | `bump`, `height` | Bump (through a Bump Map node) |
-   | `rough`, `gloss` | Reflection Roughness / Specular Roughness |
-   | `metal` | Metalness |
-   | `opac`, `alpha`, `mask`, `transp` | Opacity |
-   | `emis`, `emit`, `glow` | Emission Color |
-   | `occlusion`, `_ao`, `ao_`, `ambient` | Overall Color (Standard Material) |
-   | `spec`, `refl` | Reflection Color / Specular Color |
-   | anything else | Base Color |
-
-   Materials connect to the Output's Surface input.
-
+4. **Redshift workflow rules** (see the table below), used only when the target has no free input the source can connect to.
 5. A **menu** of the target's inputs (two-node strokes only).
+
+So a stroke that ends on a node's title or thumbnail goes to the first free input the node shows. For example, a normal map stroked onto a Standard Material's title goes to Base Color, because Base Color is shown first and is usually free. To send it to Bump, end the stroke on the Bump port row; the Bump Map node is still added for you.
+
+### Commands (Chain Connect, Fan Out, Fan In)
+
+1. **Your connection rules** for this pair of node types.
+2. **Redshift workflow rules** (see the table below).
+3. **Automatic choice**: a free input of the same type family (such as col3/col4), then any free input the source can connect to, then replacing an occupied input (Fan In never replaces).
+
+So selecting `wood_normal.png` and a Standard Material and running Chain Connect Selected Nodes sends the texture through a new Bump Map node into Bump.
+
+### Redshift workflow rules
+
+The rules look at the source node. Textures are recognized by keywords in their file name:
+
+| File name contains | Goes to |
+| --- | --- |
+| `normal`, `nrm`, `_nor` | Bump (through a Bump Map node) |
+| `disp` | Output Displacement (through a Displacement node) |
+| `bump`, `height` | Bump (through a Bump Map node) |
+| `rough`, `gloss` | Reflection Roughness / Specular Roughness |
+| `metal` | Metalness |
+| `opac`, `alpha`, `mask`, `transp` | Opacity |
+| `emis`, `emit`, `glow` | Emission Color |
+| `occlusion`, `_ao`, `ao_`, `ambient` | Overall Color (Standard Material) |
+| `spec`, `refl` | Reflection Color / Specular Color |
+| anything else | Base Color |
+
+Materials connect to the Output's Surface input.
 
 ## 9. Connection rules
 

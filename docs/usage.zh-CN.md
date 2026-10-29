@@ -88,29 +88,44 @@ NodeStroke 让你在 Cinema 4D 节点编辑器里，按住一个键再移动鼠�
 
 ## 8. 端口是怎么选的
 
-当笔画不是从端口行开始或结束时，NodeStroke 按下面的顺序选端口：
+划线和连接命令选端口的顺序不一样。
+
+### 划线（按住 I）
 
 1. 笔画起点和终点下方的**指定端口**。
 2. 这两种节点之间的**连接规则**（见下节）。
 3. 目标节点上**第一个空闲且能连的输入**，按节点上显示的顺序从上到下。
-4. 根据来源判断的 **Redshift 工作流规则**。贴图按文件名里的关键词识别：
-
-   | 文件名包含 | 连到 |
-   | --- | --- |
-   | `normal`、`nrm`、`_nor` | Bump（经过 Bump Map 节点） |
-   | `disp` | Output 的 Displacement（经过 Displacement 节点） |
-   | `bump`、`height` | Bump（经过 Bump Map 节点） |
-   | `rough`、`gloss` | 反射粗糙度 / 高光粗糙度 |
-   | `metal` | 金属度 |
-   | `opac`、`alpha`、`mask`、`transp` | 不透明度 |
-   | `emis`、`emit`、`glow` | 自发光颜色 |
-   | `occlusion`、`_ao`、`ao_`、`ambient` | Overall Color（Standard Material） |
-   | `spec`、`refl` | 反射颜色 / 高光颜色 |
-   | 其他 | 基础颜色 |
-
-   材质会连到 Output 的 Surface 输入。
-
+4. **Redshift 工作流规则**（见下表），只在目标节点上没有空闲且能连的输入时才用。
 5. 弹出目标节点的**输入菜单**（只在两个节点之间的笔画时出现）。
+
+所以笔画结束在节点标题或缩略图上时，会连到这个节点显示的第一个空闲输入。比如把法线贴图划到 Standard Material 的标题上，会连到基础颜色，因为基础颜色排在最前面，通常也是空着的。要连到 Bump，就让笔画结束在 Bump 端口行上，Bump Map 节点照样会自动加上。
+
+### 命令（依次连接、从最左节点分发、汇入最右节点）
+
+1. 这两种节点之间的**连接规则**。
+2. **Redshift 工作流规则**（见下表）。
+3. **自动选择**：先找同类型族（如 col3/col4）的空闲输入，再找任意能连的空闲输入，最后替换已占用的输入（汇入最右节点不会替换）。
+
+所以选中 `wood_normal.png` 和一个 Standard Material，执行“依次连接所选节点”，贴图会经过新加的 Bump Map 节点接到 Bump。
+
+### Redshift 工作流规则
+
+规则根据来源节点判断。贴图按文件名里的关键词识别：
+
+| 文件名包含 | 连到 |
+| --- | --- |
+| `normal`、`nrm`、`_nor` | Bump（经过 Bump Map 节点） |
+| `disp` | Output 的 Displacement（经过 Displacement 节点） |
+| `bump`、`height` | Bump（经过 Bump Map 节点） |
+| `rough`、`gloss` | 反射粗糙度 / 高光粗糙度 |
+| `metal` | 金属度 |
+| `opac`、`alpha`、`mask`、`transp` | 不透明度 |
+| `emis`、`emit`、`glow` | 自发光颜色 |
+| `occlusion`、`_ao`、`ao_`、`ambient` | Overall Color（Standard Material） |
+| `spec`、`refl` | 反射颜色 / 高光颜色 |
+| 其他 | 基础颜色 |
+
+材质会连到 Output 的 Surface 输入。
 
 ## 9. 连接规则
 
