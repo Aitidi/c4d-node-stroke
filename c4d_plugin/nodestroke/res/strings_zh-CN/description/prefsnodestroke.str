@@ -1,0 +1,14 @@
+STRINGTABLE prefsnodestroke
+{
+	prefsnodestroke                      "NodeStroke";
+	NODESTROKE_PREFS_HEADER_GESTURES     "\u8282\u70b9\u7f16\u8f91\u5668\u624b\u52bf";
+	NODESTROKE_PREFS_GESTURES            "\u542f\u7528\u624b\u52bf";
+	NODESTROKE_PREFS_CONNECT             "\u6309\u4f4f I \u7ed8\u5236\u8fde\u63a5";
+	NODESTROKE_PREFS_CUT                 "\u6309\u4f4f Y \u5207\u65ad\u8fde\u7ebf";
+	NODESTROKE_PREFS_SHAKE               "\u6447\u6643\u8282\u70b9\u65ad\u5f00\u8fde\u7ebf";
+	NODESTROKE_PREFS_DROP                "\u62d6\u5230\u8fde\u7ebf\u4e0a\u63d2\u5165\u8282\u70b9";
+	NODESTROKE_PREFS_HEADER_RULES        "\u8fde\u63a5\u89c4\u5219";
+	NODESTROKE_PREFS_EDIT_RULES          "\u7f16\u8f91\u89c4\u5219...";
+	NODESTROKE_PREFS_HEADER_DIAGNOSTICS  "\u8bca\u65ad";
+	NODESTROKE_PREFS_LOG                 "\u5199\u5165\u8bca\u65ad\u65e5\u5fd7\uff08nodestroke_debug.txt\uff09";
+}

@@ -1,0 +1,14 @@
+STRINGTABLE prefsnodestroke
+{
+	prefsnodestroke                      "NodeStroke";
+	NODESTROKE_PREFS_HEADER_GESTURES     "Node Editor Gestures";
+	NODESTROKE_PREFS_GESTURES            "Enable Gestures";
+	NODESTROKE_PREFS_CONNECT             "Hold I to Draw Connections";
+	NODESTROKE_PREFS_CUT                 "Hold Y to Cut Wires";
+	NODESTROKE_PREFS_SHAKE               "Shake Node to Disconnect";
+	NODESTROKE_PREFS_DROP                "Drop Node onto Wire to Insert";
+	NODESTROKE_PREFS_HEADER_RULES        "Connection Rules";
+	NODESTROKE_PREFS_EDIT_RULES          "Edit Rules...";
+	NODESTROKE_PREFS_HEADER_DIAGNOSTICS  "Diagnostics";
+	NODESTROKE_PREFS_LOG                 "Write Diagnostic Log (nodestroke_debug.txt)";
+}

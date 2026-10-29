@@ -1,0 +1,14 @@
+/sdk/
+/Cinema_4D_CPP_SDK_2027_0_0.zip
+/build/
+/build-c4d/
+/build-c4d-probe/
+/experiments/*_probe.txt
+/experiments/view_*.txt
+/experiments/preserved_scene_*.c4d
+__pycache__/
+/dist/
+/sdk-2026/
+/Cinema_4D_CPP_SDK_2026_0_0.zip
+/build-c4d-2026/
+/HANDOFF.md
