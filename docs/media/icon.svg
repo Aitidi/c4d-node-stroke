@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <!-- NodeStroke icon, following the Boghma plugin icon template: a dark rounded
+       square with a flat yellow glyph. Two nodes joined by one drawn stroke. -->
+  <rect width="512" height="512" rx="72" fill="#1c1c1c"/>
+  <g fill="#fbbd23">
+    <rect x="60" y="138" width="138" height="112" rx="24"/>
+    <rect x="314" y="262" width="138" height="112" rx="24"/>
+  </g>
+  <g fill="#1c1c1c">
+    <rect x="80" y="158" width="66" height="13" rx="6.5"/>
+    <rect x="334" y="282" width="66" height="13" rx="6.5"/>
+  </g>
+  <path d="M198 212 C 282 212, 230 336, 314 336" fill="none" stroke="#fbbd23" stroke-width="24" stroke-linecap="round"/>
+  <g fill="#1c1c1c">
+    <circle cx="198" cy="212" r="16"/>
+    <circle cx="314" cy="336" r="16"/>
+  </g>
+  <g fill="#fbbd23">
+    <circle cx="198" cy="212" r="7"/>
+    <circle cx="314" cy="336" r="7"/>
+  </g>
+</svg>
