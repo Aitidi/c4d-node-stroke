@@ -187,6 +187,7 @@ struct PendingPlacement {
   Int32 since;
   BaseDocument* document;
   Bool resynced = false;
+  Int rewrites = 0, resyncs = 0;
 };
 // Built on first use (see Core above).
 maxon::BaseArray<PendingPlacement>& Pending() {
@@ -249,6 +250,12 @@ maxon::Result<void> WithoutUndo(const GraphNode& node, const std::function<maxon
 // right away: the graph is unchanged, the view stays, the step that added the helper
 // is the newest undo step again, and the editor shows the helper at its record.
 constexpr Int32 kSeenMs = 300;
+// Every rewrite and resynchronisation changes the graph, and each graph change makes
+// the material recompile; a record the editor keeps changing must not turn into a
+// loop of them, so both are capped. Positions within kTolerance count as placed (the
+// editor may round them).
+constexpr Int kMaxRewrites = 3, kMaxResyncs = 2;
+constexpr Float32 kTolerance = 2.0f;
 maxon::Result<void> Resynchronise(const GraphNode& helper, BaseDocument* document) {
   iferr_scope;
   maxon::InternedId marker;
@@ -271,18 +278,24 @@ public:
       PendingPlacement& p = pending[i];
       if (!p.helper.IsValid() || GeGetTimer() - p.since > 3000) { pending.Erase(i) iferr_return; continue; }
       iferr (const maxon::BaseArray<wire_native::NodeRecord> now = wire_native::ReadNodePositions(p.helper)) continue;
-      const Bool right = !now.IsEmpty() && Abs(now[0].position.x - p.position.x) < 0.5f && Abs(now[0].position.y - p.position.y) < 0.5f;
+      const Bool right = !now.IsEmpty() && Abs(now[0].position.x - p.position.x) < kTolerance &&
+                         Abs(now[0].position.y - p.position.y) < kTolerance;
+      // Shown at its record after a resynchronisation: done.
+      if (right && p.resynced) { pending.Erase(i) iferr_return; continue; }
       if (!right) {
+        if (p.rewrites >= kMaxRewrites) { pending.Erase(i) iferr_return; continue; }
         // The editor's own record carries its current view keys; prefer it as the template.
         const maxon::DataDictionary own = LayoutRecord(p.helper) iferr_return;
         WithoutUndo(p.helper, [&]() { return WriteLayout(p.helper, own.IsEmpty() ? p.record : own, p.position); }) iferr_return;
+        ++p.rewrites;
         p.resynced = false;
       }
       if (p.resynced || GeGetTimer() - p.since < kSeenMs) continue;
       // Only in the document that got the helper, while it is the active one.
-      if (p.document != GetActiveDocument()) { pending.Erase(i) iferr_return; continue; }
+      if (p.document != GetActiveDocument() || p.resyncs >= kMaxResyncs) { pending.Erase(i) iferr_return; continue; }
       Resynchronise(p.helper, p.document) iferr_return;
       EventAdd();
+      ++p.resyncs;
       p.resynced = true;
     }
     if (!pending.IsEmpty()) SpecialEventAdd(kPlacementMessageId);
