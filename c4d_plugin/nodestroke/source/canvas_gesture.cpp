@@ -40,9 +40,9 @@ namespace Gdiplus { using std::min; using std::max; }
 #undef GetMessage
 
 namespace {
-// Local development IDs, not registered for distribution.
-constexpr Int32 kGestureMessageId = 1069987;
-constexpr Int32 kToggleId = 1069986;
+// Plugin IDs registered with Maxon (Plugin Cafe, account aitidi).
+constexpr Int32 kGestureMessageId = 1072548;
+constexpr Int32 kToggleId = 1072550;
 
 // Node layout in graph units (zoom 1). Row sizes come from the editor stylesheet
 // (<prefs>/gluon/nodeeditor_stylesheet.json: portRowHeight 20, categoryHeaderHeight

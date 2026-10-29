@@ -49,7 +49,7 @@ Ports are chosen in this order: custom rules, then a free input of the same type
 
 The node editor has no public API for canvas coordinates. The canvas gestures read the node editor's own view records and drawing data (read-only) to locate nodes and ports. This is tuned for Cinema 4D 2027.0 and checked against module SHA-256 hashes; on any other build, exact positions and group interface support turn themselves off, and the canvas must be scrolled once before gestures work. Investigation notes (in Chinese) are in `docs/investigation.md`.
 
-Plugin IDs 1069982–1069999 are local IDs not yet registered with Maxon and may clash with other plugins.
+The plugin IDs 1072547–1072560 are registered with Maxon.
 
 ## Building
 
@@ -72,4 +72,4 @@ cmake --build build --config Debug
 ctest --test-dir build -C Debug --output-on-failure
 ```
 
-`experiments/` holds read-only research probes and is not part of the plugin build. The hidden diagnostic commands `NodeStroke: Inspect View Records` and `NodeStroke: Toggle Input Probe` are for local investigation only.
+`experiments/` holds read-only research probes and is not part of the plugin build.

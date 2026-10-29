@@ -49,7 +49,7 @@ NodeStroke 让你在 Cinema 4D 节点编辑器里用键盘加划线来连接、�
 
 节点编辑器没有公开画布坐标的 API。画布手势读取节点编辑器自身的视图记录与绘制数据（只读）来确定节点和端口位置，这部分按 C4D 2027.0 调校，并用模块 SHA-256 校验版本；版本不匹配时精确定位与组接口功能自动停用，需先在画布上滚动一次再使用手势。调查记录见 `docs/investigation.md`。
 
-插件 ID 1069982–1069999 目前是未经 Maxon 注册的本机 ID，可能与其他插件冲突。
+插件 ID 1072547–1072560 已在 Maxon 注册。
 
 ## 构建
 
@@ -72,4 +72,4 @@ cmake --build build --config Debug
 ctest --test-dir build -C Debug --output-on-failure
 ```
 
-`experiments/` 中是研发用的只读探针，不参与插件构建。隐藏的诊断命令 `NodeStroke: Inspect View Records`、`NodeStroke: Toggle Input Probe` 仅用于本机调查。
+`experiments/` 中是研发用的只读探针，不参与插件构建。

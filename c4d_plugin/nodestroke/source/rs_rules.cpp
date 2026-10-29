@@ -138,7 +138,7 @@ maxon::Result<Bool> Occupied(const GraphNode& in) {
 // entry of its own (see PlacementMessage).
 // The record is a copy of an existing one (its view keys are opaque) with only the
 // position changed. Graph units; the record y is the top of the port list.
-constexpr Int32 kPlacementMessageId = 1069983;  // local development ID
+constexpr Int32 kPlacementMessageId = 1072549;
 constexpr Float32 kHelperWidth = 128;
 constexpr Float32 kGap = 40;
 struct Box { Float32 left, top, right, bottom; };

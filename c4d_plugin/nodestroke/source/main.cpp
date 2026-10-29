@@ -9,18 +9,16 @@
 #include "../res/c4d_symbols.h"
 
 using namespace cinema;
-cinema::Bool RegisterNativeViewProbe();
-void StopNativeInputProbe();
 cinema::Bool RegisterCanvasGestures();
 cinema::Bool RegisterRulesDialog();
 void StartCanvasGestures();
 void StopCanvasGestures();
 namespace {
-// Local development ID, not registered for distribution.
-constexpr Int32 kDisconnectId = 1069998;
-constexpr Int32 kCutId = 1069999;
-constexpr Int32 kConnectId = 1069997;
-constexpr Int32 kExtractId = 1069985;
+// Plugin ID registered with Maxon (Plugin Cafe, account aitidi).
+constexpr Int32 kDisconnectId = 1072552;
+constexpr Int32 kCutId = 1072553;
+constexpr Int32 kConnectId = 1072551;
+constexpr Int32 kExtractId = 1072554;
 
 maxon::Result<void> ApplySelection(BaseDocument* doc, Int32 mode)
 {
@@ -109,7 +107,6 @@ Bool cinema::PluginStart() {
   if (!RegisterWirePrefs()) return false;
   if (!RegisterRulesDialog()) return false;
   if (!wire_rs::RegisterPlacement()) return false;
-  if (!RegisterNativeViewProbe()) return false;
   if (!RegisterGraphOps()) return false;
   if (!RegisterCanvasGestures()) return false;
   if (!RegisterCommandPlugin(kDisconnectId, GeLoadString(IDS_CMD_DISCONNECT), PLUGINFLAG_HIDEPLUGINMENU, nullptr,
@@ -123,7 +120,6 @@ Bool cinema::PluginStart() {
 }
 void cinema::PluginEnd() {
   StopCanvasGestures();
-  StopNativeInputProbe();
   wire_rs::EndPlacement();
 }
 Bool cinema::PluginMessage(Int32 id, void*) {

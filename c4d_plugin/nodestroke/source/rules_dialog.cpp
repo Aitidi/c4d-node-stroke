@@ -16,8 +16,8 @@
 using namespace cinema;
 
 namespace {
-// Local development ID, not registered for distribution.
-constexpr Int32 kRulesDialogId = 1069982;
+// Plugin ID registered with Maxon (Plugin Cafe, account aitidi).
+constexpr Int32 kRulesDialogId = 1072560;
 
 enum {
   ID_HINT = 1000,

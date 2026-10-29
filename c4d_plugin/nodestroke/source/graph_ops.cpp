@@ -8,13 +8,12 @@
 using namespace cinema;
 namespace wire_ops {
 namespace {
-// Local development IDs, not registered for distribution.
-constexpr Int32 kChainId = 1069993;
-constexpr Int32 kFanOutId = 1069992;
-constexpr Int32 kInsertId = 1069991;
-constexpr Int32 kAddRuleId = 1069990;
-constexpr Int32 kOpenRulesId = 1069989;
-constexpr Int32 kFanInId = 1069988;
+// Plugin IDs registered with Maxon (Plugin Cafe, account aitidi).
+constexpr Int32 kChainId = 1072555;
+constexpr Int32 kFanOutId = 1072556;
+constexpr Int32 kInsertId = 1072558;
+constexpr Int32 kAddRuleId = 1072559;
+constexpr Int32 kFanInId = 1072557;
 
 using maxon::GraphNode;
 using NodeArray = maxon::BaseArray<GraphNode>;
@@ -291,10 +290,6 @@ public:
   }
 };
 
-class OpenRulesCommand final : public CommandData {
-public:
-  Bool Execute(BaseDocument*, GeDialog*) override { return OpenRulesFile(); }
-};
 }
 
 maxon::Result<Bool> HasRule(const maxon::GraphNode& source, const maxon::GraphNode& target, const maxon::BaseArray<Rule>& rules) {
@@ -488,8 +483,6 @@ Bool RegisterGraphOps() {
     GeLoadString(IDS_CMD_FAN_IN_HELP), NewObjClear(GraphOpCommand, Op::FAN_IN))) return false;
   if (!RegisterCommandPlugin(kInsertId, GeLoadString(IDS_CMD_INSERT), PLUGINFLAG_HIDEPLUGINMENU, nullptr,
     GeLoadString(IDS_CMD_INSERT_HELP), NewObjClear(GraphOpCommand, Op::INSERT))) return false;
-  if (!RegisterCommandPlugin(kAddRuleId, GeLoadString(IDS_CMD_ADD_RULE), PLUGINFLAG_HIDEPLUGINMENU, nullptr,
-    GeLoadString(IDS_CMD_ADD_RULE_HELP), NewObjClear(GraphOpCommand, Op::ADD_RULE))) return false;
-  return RegisterCommandPlugin(kOpenRulesId, "NodeStroke: Open Rules File"_s, PLUGINFLAG_HIDE, nullptr,
-    "Open the custom connection rules file."_s, NewObjClear(OpenRulesCommand));
+  return RegisterCommandPlugin(kAddRuleId, GeLoadString(IDS_CMD_ADD_RULE), PLUGINFLAG_HIDEPLUGINMENU, nullptr,
+    GeLoadString(IDS_CMD_ADD_RULE_HELP), NewObjClear(GraphOpCommand, Op::ADD_RULE));
 }

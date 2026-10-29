@@ -8,8 +8,8 @@ void OpenRulesEditor();
 using namespace cinema;
 
 namespace {
-// Local development ID, not registered for distribution.
-constexpr Int32 kPrefsPageId = 1069984;
+// Plugin ID registered with Maxon (Plugin Cafe, account aitidi).
+constexpr Int32 kPrefsPageId = 1072547;
 constexpr Int32 kSwitches[] = {NODESTROKE_PREFS_GESTURES, NODESTROKE_PREFS_CONNECT, NODESTROKE_PREFS_CUT,
                                NODESTROKE_PREFS_SHAKE, NODESTROKE_PREFS_DROP, NODESTROKE_PREFS_LOG};
 // Gesture switches are on unless turned off; the diagnostic log is off unless turned on.
