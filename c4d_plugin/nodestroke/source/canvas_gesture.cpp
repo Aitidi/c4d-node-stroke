@@ -137,6 +137,11 @@ struct State {
 State g;
 void DebugLog(const maxon::String& text);
 
+// Cinema 4D 2026 has no exact drawing data, so its calibrations must survive
+// graph transactions and off-canvas clicks (helper placement sends both).
+// 2027 keeps its original, stricter invalidation rules.
+Bool KeepsCalibrationAcrossTransactions() { return GetC4DVersion() < 2027000; }
+
 Bool IsCanvasCandidate(HWND hwnd) {
   char name[64] = {};
   DWORD process = 0;
@@ -190,6 +195,11 @@ Bool RefreshContext() {
     return false;
   }
   if (!g.contextRoot.IsValid() || !(g.contextRoot == root)) {
+    if (!KeepsCalibrationAcrossTransactions()) {
+      g.bindings.Flush();
+      g.contextRoot = root;
+      return true;
+    }
     // A transaction (including helper placement) may replace the graph model,
     // material wrapper and view root. The node-editor view key and its transform
     // are the stable state which the canvas calibration actually describes.
@@ -572,6 +582,10 @@ LRESULT CALLBACK GestureHook(int code, WPARAM wParam, LPARAM lParam) {
         g.watchCanvas = msg->hwnd;
         g.watchDrag = true;
         if (g.dragEvent) SetEvent(g.dragEvent);
+      } else if (!KeepsCalibrationAcrossTransactions() && !IsCanvasCandidate(msg->hwnd)) {
+        // Clicking editor chrome can change the displayed group (breadcrumbs,
+        // tabs, etc.). Require a fresh scroll in the newly displayed view.
+        g.bindings.Flush();
       }
       break;
     case WM_LBUTTONDBLCLK:
@@ -1468,12 +1482,15 @@ maxon::Result<void> Execute(Mode mode, HWND canvas, const maxon::BaseArray<Scree
       if (!hits.IsEmpty() && hits[hits.GetCount() - 1].node == hit) { hits[hits.GetCount() - 1].last = p; continue; }
       hits.Append(Hit{hit, p, p}) iferr_return;
     }
-    maxon::String hitLog = FormatString("gesture: connect hit @ node(s)", hits.GetCount());
-    for (Int i = 0; i < hits.GetCount(); ++i) {
-      const maxon::IdAndVersion asset = hits[i].node->node.GetValue(maxon::nodes::AssetId).GetOrDefault() iferr_return;
-      hitLog += FormatString(" #@=@", i, asset.first.ToString());
+    if (wire_prefs::Enabled(NODESTROKE_PREFS_LOG)) {
+      // Diagnostics only: a node whose asset cannot be read must not stop the stroke.
+      maxon::String hitLog = FormatString("gesture: connect hit @ node(s)", hits.GetCount());
+      for (Int i = 0; i < hits.GetCount(); ++i) {
+        iferr (const maxon::IdAndVersion asset = hits[i].node->node.GetValue(maxon::nodes::AssetId).GetOrDefault()) continue;
+        hitLog += FormatString(" #@=@", i, asset.first.ToString());
+      }
+      DebugLog(hitLog);
     }
-    DebugLog(hitLog);
     if (hits.GetCount() < 2) {
       StatusSetText(GeLoadString(IDS_GESTURE_TWO_NODES));
       return maxon::OK;

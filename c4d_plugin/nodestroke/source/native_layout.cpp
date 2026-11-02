@@ -10,7 +10,7 @@ maxon::Result<maxon::BaseArray<Record>> ReadRecords(const maxon::GraphNode& node
  // 2026 uses the calibrated fallback; every dictionary/tuple is still checked
  // below. Exact drawlist access has a separate, unchanged module-hash gate.
  const Int32 version = GetC4DVersion();
- if (!((version >= 2026000 && version < 2027000) || version == 2027000))
+ if (version < 2026000 || version > 2027000)
    return maxon::IllegalStateError(MAXON_SOURCE_LOCATION,"Unsupported Cinema 4D version for experimental layout reader."_s);
  if (!node.IsValid()) return maxon::IllegalStateError(MAXON_SOURCE_LOCATION,"Invalid graph node."_s);
  maxon::BaseArray<Record> out;
