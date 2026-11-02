@@ -1,6 +1,7 @@
 #include "wire_prefs.h"
 #include "c4d_libs/lib_prefs.h"
 #include "c4d_libs/lib_description.h"
+#include "../res/c4d_symbols.h"
 
 // Opens the connection rules editor (rules_dialog.cpp).
 void OpenRulesEditor();
@@ -80,6 +81,16 @@ void SetEnabled(Int32 option, Bool value) {
 }
 }
 
+namespace {
+// Opens the NodeStroke page of the preferences, for the Extensions > NodeStroke menu.
+class SettingsCommand final : public CommandData {
+public:
+  Bool Execute(BaseDocument*, GeDialog*) override { return PrefsLib_OpenDialog(kPrefsPageId); }
+};
+}
+
 Bool RegisterWirePrefs() {
-  return PrefsDialogObject::Register(kPrefsPageId, WirePrefs::Alloc, "NodeStroke"_s, "prefsnodestroke"_s, 0, 0) != nullptr;
+  if (!PrefsDialogObject::Register(kPrefsPageId, WirePrefs::Alloc, "NodeStroke"_s, "prefsnodestroke"_s, 0, 0)) return false;
+  return RegisterCommandPlugin(kSettingsCommandId, GeLoadString(IDS_CMD_SETTINGS), PLUGINFLAG_HIDEPLUGINMENU, AutoBitmap("icon.png"_s),
+    GeLoadString(IDS_CMD_SETTINGS_HELP), NewObjClear(SettingsCommand));
 }

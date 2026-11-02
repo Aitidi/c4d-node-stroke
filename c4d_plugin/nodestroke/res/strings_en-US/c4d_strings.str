@@ -28,7 +28,7 @@ STRINGTABLE
 	IDS_CMD_INSERT_HELP          "Insert the selected node into the selected wire.";
 	IDS_CMD_ADD_RULE             "NodeStroke: Add Rule From Selected Ports";
 	IDS_CMD_ADD_RULE_HELP        "Connect the selected output and input ports and remember them as a rule for these node types.";
-	IDS_CMD_TOGGLE               "NodeStroke: Toggle Canvas Gestures";
+	IDS_CMD_TOGGLE               "NodeStroke";
 	IDS_CMD_TOGGLE_HELP          "Hold I and move the mouse across nodes to connect them; hold Y and move across wires to cut them.";
 	IDS_ERR_NO_MATERIAL          "Select a node material in the Material Manager first.";
 	IDS_ERR_NO_GRAPH             "The selected material has no graph in the active node space.";
@@ -65,4 +65,6 @@ STRINGTABLE
 	IDS_GESTURE_CUT              "NodeStroke: cut # wires.";
 	IDS_GESTURE_ON               "NodeStroke: canvas gestures on (hold I to connect, Y to cut).";
 	IDS_GESTURE_OFF              "NodeStroke: canvas gestures off.";
+	IDS_CMD_SETTINGS             "NodeStroke Settings...";
+	IDS_CMD_SETTINGS_HELP        "Open the NodeStroke page of the preferences (gestures, connection rules, diagnostic log).";
 }

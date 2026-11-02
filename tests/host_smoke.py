@@ -1,7 +1,7 @@
 import c4d
 print('C4D_VERSION', c4d.GetC4DVersion())
 missing = []
-for i in range(1072550, 1072561):
+for i in list(range(1072550, 1072561)) + [1073003]:
     plugin = c4d.plugins.FindPlugin(i, c4d.PLUGINTYPE_COMMAND)
     print('WIRE_PLUGIN', i, plugin.GetName() if plugin else None)
     if plugin is None:

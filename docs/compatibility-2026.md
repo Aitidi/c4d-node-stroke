@@ -44,7 +44,7 @@ Output: `dist/NodeStroke-C4D2026-preview.zip`.
 
 - Model tests: `ctest --test-dir build -C Debug --output-on-failure`
 - Group port label tests: `py -3 -m unittest discover -s tests -p test_*.py`
-- Host registration: run `tests/host_smoke.py` in Cinema 4D with the plugin loaded; all 11 commands must be present.
+- Host registration: run `tests/host_smoke.py` in Cinema 4D with the plugin loaded; all 12 commands must be present.
 
 Checked in the Cinema 4D 2026.4.0 GUI: loading, I connect, Y cut, undo, drawing again right after an automatic Bump or Output node was created without scrolling, connecting and cutting wires between nodes inside a group after recalibrating there, and connecting and cutting wires to the group's interface ports.
 

@@ -475,14 +475,14 @@ maxon::Result<void> ExtractNode(const maxon::GraphNode& node) {
 
 Bool RegisterGraphOps() {
   using namespace wire_ops;
-  if (!RegisterCommandPlugin(kChainId, GeLoadString(IDS_CMD_CHAIN), PLUGINFLAG_HIDEPLUGINMENU, nullptr,
+  if (!RegisterCommandPlugin(kChainId, GeLoadString(IDS_CMD_CHAIN), PLUGINFLAG_HIDEPLUGINMENU, AutoBitmap("icon.png"_s),
     GeLoadString(IDS_CMD_CHAIN_HELP), NewObjClear(GraphOpCommand, Op::CHAIN))) return false;
-  if (!RegisterCommandPlugin(kFanOutId, GeLoadString(IDS_CMD_FAN_OUT), PLUGINFLAG_HIDEPLUGINMENU, nullptr,
+  if (!RegisterCommandPlugin(kFanOutId, GeLoadString(IDS_CMD_FAN_OUT), PLUGINFLAG_HIDEPLUGINMENU, AutoBitmap("icon.png"_s),
     GeLoadString(IDS_CMD_FAN_OUT_HELP), NewObjClear(GraphOpCommand, Op::FAN_OUT))) return false;
-  if (!RegisterCommandPlugin(kFanInId, GeLoadString(IDS_CMD_FAN_IN), PLUGINFLAG_HIDEPLUGINMENU, nullptr,
+  if (!RegisterCommandPlugin(kFanInId, GeLoadString(IDS_CMD_FAN_IN), PLUGINFLAG_HIDEPLUGINMENU, AutoBitmap("icon.png"_s),
     GeLoadString(IDS_CMD_FAN_IN_HELP), NewObjClear(GraphOpCommand, Op::FAN_IN))) return false;
-  if (!RegisterCommandPlugin(kInsertId, GeLoadString(IDS_CMD_INSERT), PLUGINFLAG_HIDEPLUGINMENU, nullptr,
+  if (!RegisterCommandPlugin(kInsertId, GeLoadString(IDS_CMD_INSERT), PLUGINFLAG_HIDEPLUGINMENU, AutoBitmap("icon.png"_s),
     GeLoadString(IDS_CMD_INSERT_HELP), NewObjClear(GraphOpCommand, Op::INSERT))) return false;
-  return RegisterCommandPlugin(kAddRuleId, GeLoadString(IDS_CMD_ADD_RULE), PLUGINFLAG_HIDEPLUGINMENU, nullptr,
+  return RegisterCommandPlugin(kAddRuleId, GeLoadString(IDS_CMD_ADD_RULE), PLUGINFLAG_HIDEPLUGINMENU, AutoBitmap("icon.png"_s),
     GeLoadString(IDS_CMD_ADD_RULE_HELP), NewObjClear(GraphOpCommand, Op::ADD_RULE));
 }

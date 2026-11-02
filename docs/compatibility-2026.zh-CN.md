@@ -44,7 +44,7 @@ Expand-Archive -LiteralPath .\Cinema_4D_CPP_SDK_2026_0_0.zip -DestinationPath .\
 
 - 模型测试：`ctest --test-dir build -C Debug --output-on-failure`
 - 组端口标签测试：`py -3 -m unittest discover -s tests -p test_*.py`
-- 宿主注册检查：在已加载插件的 Cinema 4D 中运行 `tests/host_smoke.py`，11 个命令必须全部存在。
+- 宿主注册检查：在已加载插件的 Cinema 4D 中运行 `tests/host_smoke.py`，12 个命令必须全部存在。
 
 已在 Cinema 4D 2026.4.0 界面中确认：插件加载、I 连接、Y 切断、撤销，自动创建 Bump 或 Output 节点后无需滚动即可继续划线，进组重新校准后连接和切断组内节点之间的连线，以及连接和切断连到组接口端口的连线。
 

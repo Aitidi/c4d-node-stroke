@@ -1656,10 +1656,10 @@ public:
 };
 }
 
-// Kept out of the Extensions menu; available in the Commander for a shortcut.
+// Listed under Extensions > NodeStroke (main.cpp) and in the Commander.
 Bool RegisterCanvasGestures() {
   if (!RegisterMessagePlugin(kGestureMessageId, "NodeStroke Gestures"_s, 0, NewObjClear(GestureMessage))) return false;
-  return RegisterCommandPlugin(kToggleId, GeLoadString(IDS_CMD_TOGGLE), PLUGINFLAG_HIDEPLUGINMENU, nullptr,
+  return RegisterCommandPlugin(kToggleId, GeLoadString(IDS_CMD_TOGGLE), PLUGINFLAG_HIDEPLUGINMENU, AutoBitmap("icon.png"_s),
     GeLoadString(IDS_CMD_TOGGLE_HELP), NewObjClear(ToggleCommand));
 }
 void ApplyGesturePrefs() {
