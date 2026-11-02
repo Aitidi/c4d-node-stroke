@@ -1,6 +1,6 @@
 #pragma once
 
-// Internal C4D 2027.0 drawlist format. The caller must verify the exact host
+// Internal C4D drawlist format (the same in 2027.0 and 2026.4.0). The caller must verify the exact host
 // binaries, copy a consistent drawlist snapshot and bind it to the graph view.
 // This parser deliberately fails closed on unknown or ambiguous structures.
 #include <algorithm>

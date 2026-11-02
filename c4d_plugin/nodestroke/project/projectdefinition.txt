@@ -1,0 +1,10 @@
+// Cinema 4D 2026 SDK discovery and configuration.
+// Keep dependencies and module ID in sync with the 2027 CMake configuration.
+Platform=windows-x64
+Type=DLL
+C4D=true
+ModuleId=net.aitidi.nodestroke
+APIS=asset.framework;cinema.framework;cinema_hybrid.framework;core.framework;graph.framework;nodes.framework;nodespace.framework
+SourceDirectory=source
+RuntimeTypeInfo=false
+ExceptionHandling=false

@@ -1,6 +1,7 @@
 #pragma once
 
-// Read-only C4D 2027.0 Windows research adapter. All offsets are build-specific.
+// Read-only C4D Windows research adapter for 2027.0 and 2026.4.0. All offsets are
+// build-specific: a build is only used when all four host modules match its hashes.
 // Every failure leaves group interface operations disabled for that gesture.
 #include "group_draw_data.h"
 #include <windows.h>
@@ -55,19 +56,39 @@ inline bool ModuleHash(const wchar_t* name, const char* expected) {
     if (expected[i * 2] != hex[digest[i] >> 4] || expected[i * 2 + 1] != hex[digest[i] & 15]) return false;
   return true;
 }
-inline bool SupportedBuild() {
-  static const bool supported = ModuleHash(L"gui.module.xdl64", "2274410ec73d65612b39c29f50f37dc870e6d5aa8649c214159606e145d82217") &&
-    ModuleHash(L"c4d_nodeeditor.xdl64", "4528e0fd90c841cbb79014c1af4773380aebb59afdbda988b950804a242ff4cf") &&
-    ModuleHash(L"gui_gluon.module.xdl64", "11b4611c4b589f7bd08d36575d24cb825c2e376049bb9aee141c6a2344427122") &&
-    ModuleHash(L"presenter_nodes.module.xdl64", "060432a909a7d418b7abe940e75ccc8817141257e8fb77eb3cef006bd8508279");
+// Addresses that differ between supported builds. The drawlist, window, presenter
+// and command layouts are the same in both (checked against the live 2026.4 host).
+struct Build {
+  Address windowProc;     // gui.module: the canvas's window procedure
+  Address windowTable;    // gui.module: HWND -> native window hash table and its mask
+  Address windowMask;
+  Address portInterface;  // c4d_nodeeditor: offset of a port presenter's GetGraphNode interface
+};
+inline const Build* SupportedBuild() {
+  static const Build* const supported = []() -> const Build* {
+    static const Build build2027{0x23190, 0x12de60, 0x12de68, 0x28f750};
+    static const Build build2026_4{0x22db0, 0x10ee60, 0x10ee68, 0x28a510};
+    if (ModuleHash(L"gui.module.xdl64", "2274410ec73d65612b39c29f50f37dc870e6d5aa8649c214159606e145d82217") &&
+        ModuleHash(L"c4d_nodeeditor.xdl64", "4528e0fd90c841cbb79014c1af4773380aebb59afdbda988b950804a242ff4cf") &&
+        ModuleHash(L"gui_gluon.module.xdl64", "11b4611c4b589f7bd08d36575d24cb825c2e376049bb9aee141c6a2344427122") &&
+        ModuleHash(L"presenter_nodes.module.xdl64", "060432a909a7d418b7abe940e75ccc8817141257e8fb77eb3cef006bd8508279"))
+      return &build2027;
+    if (ModuleHash(L"gui.module.xdl64", "5eadecf3aad0d5b5fac8cc24420512a7209b2466619ea178d4a1c45957732b2f") &&
+        ModuleHash(L"c4d_nodeeditor.xdl64", "6c2df91ac2a549014022db2e3885c7de580903626714e3dffe78d6e508a9f247") &&
+        ModuleHash(L"gui_gluon.module.xdl64", "d439bb0dcf7f1a0dbb7ca3ec9980dbdc6f4b89e3a5c5174b362cf7a5fae9944f") &&
+        ModuleHash(L"presenter_nodes.module.xdl64", "6193619ec83ab0bb042a4cc31f45f6f7d4506cbd1d3d2648708deb8087b08fed"))
+      return &build2026_4;
+    return nullptr;
+  }();
   return supported;
 }
 
 inline Address WindowObject(HWND hwnd) {
+  const Build* build = SupportedBuild();
   const auto base = reinterpret_cast<Address>(GetModuleHandleW(L"gui.module.xdl64"));
   const auto proc = static_cast<Address>(GetWindowLongPtrW(hwnd, GWLP_WNDPROC));
-  if (!base || proc != base + 0x23190) return 0;
-  const Address table = Word(base + 0x12de60), mask = Word(base + 0x12de68);
+  if (!build || !base || proc != base + build->windowProc) return 0;
+  const Address table = Word(base + build->windowTable), mask = Word(base + build->windowMask);
   if (!table || mask > 1000000) return 0;
   std::uint64_t value = reinterpret_cast<Address>(hwnd);
   value ^= value >> 32; value ^= (value >> 12) ^ (value >> 20); value ^= (value >> 4) ^ (value >> 7);

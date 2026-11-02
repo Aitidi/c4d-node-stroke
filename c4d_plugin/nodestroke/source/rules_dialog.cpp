@@ -190,6 +190,6 @@ void OpenRulesEditor() { CallCommand(kRulesDialogId); }
 
 // Kept out of the Extensions menu; opened from the preferences page or the Commander.
 Bool RegisterRulesDialog() {
-  return RegisterCommandPlugin(kRulesDialogId, GeLoadString(IDS_CMD_RULES), PLUGINFLAG_HIDEPLUGINMENU, nullptr,
+  return RegisterCommandPlugin(kRulesDialogId, GeLoadString(IDS_CMD_RULES), PLUGINFLAG_HIDEPLUGINMENU, AutoBitmap("icon.png"_s),
     GeLoadString(IDS_CMD_RULES_HELP), NewObjClear(RulesCommand));
 }

@@ -28,7 +28,7 @@ STRINGTABLE
 	IDS_CMD_INSERT_HELP          "\u628a\u6240\u9009\u8282\u70b9\u63d2\u5165\u6240\u9009\u8fde\u7ebf\u3002";
 	IDS_CMD_ADD_RULE             "NodeStroke\uff1a\u4ece\u6240\u9009\u7aef\u53e3\u6dfb\u52a0\u89c4\u5219";
 	IDS_CMD_ADD_RULE_HELP        "\u8fde\u63a5\u6240\u9009\u7684\u8f93\u51fa\u548c\u8f93\u5165\u7aef\u53e3\uff0c\u5e76\u8bb0\u4e3a\u8fd9\u4e24\u79cd\u8282\u70b9\u4e4b\u95f4\u7684\u89c4\u5219\u3002";
-	IDS_CMD_TOGGLE               "NodeStroke\uff1a\u5f00\u5173\u753b\u5e03\u624b\u52bf";
+	IDS_CMD_TOGGLE               "NodeStroke";
 	IDS_CMD_TOGGLE_HELP          "\u6309\u4f4f I \u5e76\u5212\u8fc7\u8282\u70b9\u5373\u53ef\u8fde\u63a5\uff1b\u6309\u4f4f Y \u5e76\u5212\u8fc7\u8fde\u7ebf\u5373\u53ef\u5207\u65ad\u3002";
 	IDS_ERR_NO_MATERIAL          "\u8bf7\u5148\u5728\u6750\u8d28\u7ba1\u7406\u5668\u4e2d\u9009\u4e2d\u4e00\u4e2a\u8282\u70b9\u6750\u8d28\u3002";
 	IDS_ERR_NO_GRAPH             "\u6240\u9009\u6750\u8d28\u5728\u5f53\u524d\u8282\u70b9\u7a7a\u95f4\u4e2d\u6ca1\u6709\u8282\u70b9\u56fe\u3002";
@@ -65,4 +65,6 @@ STRINGTABLE
 	IDS_GESTURE_CUT              "NodeStroke\uff1a\u5df2\u5207\u65ad # \u6761\u8fde\u7ebf\u3002";
 	IDS_GESTURE_ON               "NodeStroke\uff1a\u753b\u5e03\u624b\u52bf\u5df2\u5f00\u542f\uff08\u6309\u4f4f I \u8fde\u63a5\uff0c\u6309\u4f4f Y \u5207\u65ad\uff09\u3002";
 	IDS_GESTURE_OFF              "NodeStroke\uff1a\u753b\u5e03\u624b\u52bf\u5df2\u5173\u95ed\u3002";
+	IDS_CMD_SETTINGS             "NodeStroke 设置...";
+	IDS_CMD_SETTINGS_HELP        "打开偏好设置中的 NodeStroke 页（手势、连接规则、诊断日志）。";
 }

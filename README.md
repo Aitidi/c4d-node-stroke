@@ -2,6 +2,8 @@
 
 English | [简体中文](README.zh-CN.md)
 
+**Cinema 4D 2026 (preview):** NodeStroke can also be built for Cinema 4D 2026. The core gestures work, and the canvas must be scrolled once before drawing. On 2026.4.0, exact port positions and wires to a group's interface ports work as on 2027; other 2026 builds estimate positions and cannot connect or cut wires to group interface ports. See [Cinema 4D 2026 compatibility](docs/compatibility-2026.md). The rest of this page describes the 2027 release.
+
 NodeStroke lets you connect, cut and tidy wires in the Cinema 4D node editor by drawing strokes while holding a key. It is a C++ SDK plugin for Cinema 4D 2027.0 on Windows (Redshift node materials).
 
 ![NodeStroke demo: drawing connections, cutting wires and adding a Displacement node in the node editor](docs/media/demo.gif)
@@ -27,7 +29,9 @@ Strokes apply when the key is released, and every change can be undone with Ctrl
 
 ## Commands
 
-These commands are not in the Extensions menu. Find them in the Commander or give them a shortcut in Customize Commands. Select the node material in the Material Manager first, then select the elements in the node graph.
+**Extensions > NodeStroke** holds two commands: `NodeStroke` turns the canvas gestures on or off (the same switch as "Enable Gestures" in the preferences), and `NodeStroke Settings...` opens the preferences page. If a plugin manager such as Boghma lists NodeStroke in its own menu, that entry gets the same icon and commands.
+
+The commands below are not in the Extensions menu. Find them in the Commander or give them a shortcut in Customize Commands. Select the node material in the Material Manager first, then select the elements in the node graph.
 
 | Command | Use |
 | --- | --- |
@@ -41,15 +45,13 @@ These commands are not in the Extensions menu. Find them in the Commander or giv
 | `NodeStroke: Insert Node Into Selected Wire` | Select a wire and a node, or the two nodes a wire joins plus the node to insert |
 | `NodeStroke: Add Rule From Selected Ports` | Connects a selected port pair and remembers it as the default for these two node types |
 | `NodeStroke: Edit Connection Rules` | Rules window: list, add from selected ports and delete rules (stored in `<preferences folder>/nodestroke_rules.txt`) |
-| `NodeStroke: Toggle Canvas Gestures` | The same switch as "Enable Gestures" in the preferences |
-
 The commands choose ports in this order: custom rules, then a free input of the same type family (such as col3/col4), then any free connectable input, then replacing an occupied input (fan in never replaces). Strokes choose differently; see [How ports are chosen](docs/usage.md#8-how-ports-are-chosen). Every change runs in one graph transaction and can be undone.
 
 ## How it works
 
-The node editor has no public API for canvas coordinates. The canvas gestures read the node editor's own view records and drawing data (read-only) to locate nodes and ports. This is tuned for Cinema 4D 2027.0 and checked against module SHA-256 hashes; on any other build, exact positions and group interface support turn themselves off, and the canvas must be scrolled once before gestures work. Investigation notes (in Chinese) are in `docs/investigation.md`.
+The node editor has no public API for canvas coordinates. The canvas gestures read the node editor's own view records and drawing data (read-only) to locate nodes and ports. This is tuned for Cinema 4D 2027.0 (and 2026.4.0) and checked against module SHA-256 hashes; on any other build, exact positions and group interface support turn themselves off, and the canvas must be scrolled once before gestures work. Investigation notes (in Chinese) are in `docs/investigation.md`.
 
-The plugin IDs 1072547–1072560 are registered with Maxon.
+The plugin IDs 1072547–1072560 and 1073003 are registered with Maxon.
 
 ## Building
 

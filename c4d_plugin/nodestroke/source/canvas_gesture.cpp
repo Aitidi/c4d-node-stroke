@@ -3,7 +3,7 @@
 // and move across wires to cut them. Releasing the key applies the stroke.
 // While dragging a node normally: shake it left/right to take it out of its wires, or drag an
 // unconnected node onto a wire and rest briefly to splice it in. The canvas has no public API: screen positions are
-// derived from the undocumented 2027 view/node layout records (native_layout.h)
+// derived from typed, undocumented 2026/2027 view/node layout records (native_layout.h)
 // and the node editor's own style values (see kHeader below).
 #include "c4d.h"
 #include "graph_ops.h"
@@ -82,7 +82,16 @@ constexpr ULONGLONG kDwellMs = 300;
 constexpr WPARAM kDwellMarker = 0x100000;
 struct ScreenPoint { Int32 x, y; };
 struct ViewSnapshot { maxon::GraphNode container; wire_native::ViewRecord view; };
-struct Binding { HWND hwnd; maxon::GraphNode root, container; maxon::Id key; };
+struct Binding {
+  HWND hwnd;
+  maxon::GraphNode root, container;
+  maxon::Id key;
+  Float zoom, offsetX, offsetY;
+  // GraphNode wrappers can be replaced by a graph transaction even though the
+  // displayed view is unchanged. The view identity and transform locate that
+  // view after the replacement; paths are diagnostics and allow a fast match.
+  maxon::String rootPath, containerPath;
+};
 
 struct State {
   HHOOK hook = nullptr;
@@ -126,6 +135,12 @@ struct State {
   HWND trackedCanvas = nullptr;
 };
 State g;
+void DebugLog(const maxon::String& text);
+
+// Cinema 4D 2026 builds other than 2026.4.0 have no exact drawing data, so 2026
+// calibrations must survive graph transactions and off-canvas clicks (helper
+// placement sends both). 2027 keeps its original, stricter invalidation rules.
+Bool KeepsCalibrationAcrossTransactions() { return GetC4DVersion() < 2027000; }
 
 Bool IsCanvasCandidate(HWND hwnd) {
   char name[64] = {};
@@ -175,11 +190,49 @@ maxon::Result<maxon::GraphNode> CurrentRoot() {
 }
 Bool RefreshContext() {
   iferr (const maxon::GraphNode root = CurrentRoot()) {
+    if (!g.bindings.IsEmpty()) DebugLog("binding: cleared because the active graph is unavailable"_s);
     g.bindings.Flush(); g.contextRoot = maxon::GraphNode();
     return false;
   }
   if (!g.contextRoot.IsValid() || !(g.contextRoot == root)) {
-    g.bindings.Flush();
+    if (!KeepsCalibrationAcrossTransactions()) {
+      g.bindings.Flush();
+      g.contextRoot = root;
+      return true;
+    }
+    // A transaction (including helper placement) may replace the graph model,
+    // material wrapper and view root. The node-editor view key and its transform
+    // are the stable state which the canvas calibration actually describes.
+    const maxon::String rootPath = root.GetPath().ToString();
+    maxon::BaseArray<Binding> kept;
+    maxon::BaseArray<ViewSnapshot> views;
+    Bool canReadViews = true;
+    Int viewMismatch = 0, pathChanged = 0, duplicateCount = 0;
+    iferr (views = ReadActiveViews()) { canReadViews = false; }
+    if (canReadViews) {
+      for (Binding& binding : g.bindings) {
+        const ViewSnapshot* match = nullptr;
+        Bool duplicate = false;
+        for (const ViewSnapshot& view : views) {
+          if (!(view.view.key == binding.key)) continue;
+          if (view.view.zoom != binding.zoom || view.view.offset.x != binding.offsetX || view.view.offset.y != binding.offsetY) continue;
+          if (match) { duplicate = true; break; }
+          match = &view;
+        }
+        if (duplicate) { ++duplicateCount; continue; }
+        if (!match) { ++viewMismatch; continue; }
+        const maxon::String containerPath = match->container.GetPath().ToString();
+        if (!(containerPath == binding.containerPath)) ++pathChanged;
+        binding.root = root;
+        binding.container = match->container;
+        binding.containerPath = containerPath;
+        binding.rootPath = rootPath;
+        iferr (kept.Append(std::move(binding))) continue;
+      }
+    }
+    DebugLog(FormatString("binding: graph root wrapper changed; retained @ of @ binding(s), views=@ view-mismatch=@ path-changed=@ duplicate=@",
+      kept.GetCount(), g.bindings.GetCount(), views.GetCount(), viewMismatch, pathChanged, duplicateCount));
+    g.bindings = std::move(kept);
     g.contextRoot = root;
   }
   return true;
@@ -324,17 +377,43 @@ void CALLBACK TrackTimer(HWND, UINT, UINT_PTR id, DWORD) {
   KillTimer(nullptr, id);
   HWND canvas = g.trackedCanvas;
   g.trackedCanvas = nullptr;
-  if (!canvas || !IsCanvasCandidate(canvas) || !RefreshContext() || !(g.contextRoot == g.snapshotRoot)) return;
-  iferr (const maxon::BaseArray<ViewSnapshot> now = ReadActiveViews()) return;
+  if (!canvas || !IsCanvasCandidate(canvas) || !RefreshContext() || !(g.contextRoot == g.snapshotRoot)) {
+    DebugLog("binding: calibration cancelled because the canvas or graph context changed"_s);
+    return;
+  }
+  iferr (const maxon::BaseArray<ViewSnapshot> now = ReadActiveViews()) {
+    DebugLog("binding: cannot read views after calibration: "_s + err.GetMessage());
+    return;
+  }
   const long index = wire_binding::FindUniqueChanged(g.snapshot, now,
     [](const auto& a, const auto& b) { return a.container == b.container && a.view.key == b.view.key; },
     [](const auto& a, const auto& b) { return a.view.zoom == b.view.zoom && a.view.offset.x == b.view.offset.x && a.view.offset.y == b.view.offset.y; });
-  if (index < 0) return;
-  const ViewSnapshot* changed = &now[index];
-  for (Binding& b : g.bindings) {
-    if (b.hwnd == canvas) { b.root = g.contextRoot; b.container = changed->container; b.key = changed->view.key; return; }
+  if (index < 0) {
+    DebugLog(FormatString("binding: calibration found no unique changed view (before=@, after=@)", g.snapshot.GetCount(), now.GetCount()));
+    return;
   }
-  iferr (g.bindings.Append(Binding{canvas, g.contextRoot, changed->container, changed->view.key})) return;
+  const ViewSnapshot* changed = &now[index];
+  DebugLog(FormatString("binding: calibrated canvas=@ view=@", (UInt64)(UINT_PTR)canvas, changed->view.key));
+  const maxon::String rootPath = g.contextRoot.GetPath().ToString();
+  const maxon::String containerPath = changed->container.GetPath().ToString();
+  for (Binding& b : g.bindings) {
+    if (b.hwnd == canvas) {
+      b.root = g.contextRoot;
+      b.container = changed->container;
+      b.key = changed->view.key;
+      b.zoom = changed->view.zoom;
+      b.offsetX = changed->view.offset.x;
+      b.offsetY = changed->view.offset.y;
+      b.rootPath = rootPath;
+      b.containerPath = containerPath;
+      return;
+    }
+  }
+  iferr (g.bindings.Append(Binding{
+    canvas, g.contextRoot, changed->container, changed->view.key,
+    changed->view.zoom, changed->view.offset.x, changed->view.offset.y,
+    rootPath, containerPath
+  })) return;
 }
 void BeginTracking(HWND canvas) {
   g.trackedCanvas = nullptr;
@@ -409,6 +488,7 @@ Bool FeedShake(Int32 x) {
 void FinishStroke() {
   if (g.pollTimer) KillTimer(nullptr, g.pollTimer);
   g.pollTimer = 0;
+  DebugLog(FormatString("gesture: finish mode=@ samples=@", Int32(g.mode), g.stroke.GetCount()));
   g.pendingMode = g.mode;
   g.pendingCanvas = g.canvas;
   g.pendingRoot = g.strokeRoot;
@@ -502,7 +582,7 @@ LRESULT CALLBACK GestureHook(int code, WPARAM wParam, LPARAM lParam) {
         g.watchCanvas = msg->hwnd;
         g.watchDrag = true;
         if (g.dragEvent) SetEvent(g.dragEvent);
-      } else if (!IsCanvasCandidate(msg->hwnd)) {
+      } else if (!KeepsCalibrationAcrossTransactions() && !IsCanvasCandidate(msg->hwnd)) {
         // Clicking editor chrome can change the displayed group (breadcrumbs,
         // tabs, etc.). Require a fresh scroll in the newly displayed view.
         g.bindings.Flush();
@@ -510,7 +590,10 @@ LRESULT CALLBACK GestureHook(int code, WPARAM wParam, LPARAM lParam) {
       break;
     case WM_LBUTTONDBLCLK:
       // Entering a group can reuse the same HWND and material graph.
-      if (IsCanvasCandidate(msg->hwnd)) g.bindings.Flush();
+      if (IsCanvasCandidate(msg->hwnd)) {
+        if (!g.bindings.IsEmpty()) DebugLog("binding: cleared by a canvas double-click (possible group navigation)"_s);
+        g.bindings.Flush();
+      }
       break;
     case WM_MOUSEMOVE: {
       if (msg->wParam & kDwellMarker) {
@@ -799,8 +882,9 @@ Bool PresentedPortsMatch(wire_group_native::Address model, const maxon::BaseArra
   using namespace wire_group_native;
   presentedIns.Flush();
   presentedOuts.Flush();
+  const Build* build = SupportedBuild();
   const Address module = reinterpret_cast<Address>(GetModuleHandleW(L"c4d_nodeeditor.xdl64"));
-  const Address infoOffset = module ? Word(module + 0x28f750) : 0;
+  const Address infoOffset = build && module ? Word(module + build->portInterface) : 0;
   if (!infoOffset || infoOffset > 0x100000) { DebugLog("group presenter: invalid interface offset"_s); return false; }
   std::unordered_set<Address> visited;
   // Port lists are named from inside the group: a group output receives inner
@@ -1302,6 +1386,8 @@ maxon::Result<void> Execute(Mode mode, HWND canvas, const maxon::BaseArray<Scree
   }
   maxon::BaseArray<NodeGeom> nodes = Layout(active->container) iferr_return;
   ApplyDrawn(nodes, shown) iferr_return;
+  DebugLog(FormatString("gesture: execute mode=@ samples=@ nodes=@ zoom=@ offset.x=@ offset.y=@", Int32(mode), stroke.GetCount(),
+    nodes.GetCount(), view->zoom, view->offset.x, view->offset.y));
   const BoundaryPorts boundary = GroupBoundary(active->container, graph.GetViewRoot(), shown.drawing, *view) iferr_return;
 
   if (mode == Mode::SHAKE) {
@@ -1397,6 +1483,15 @@ maxon::Result<void> Execute(Mode mode, HWND canvas, const maxon::BaseArray<Scree
       if (!hits.IsEmpty() && hits[hits.GetCount() - 1].node == hit) { hits[hits.GetCount() - 1].last = p; continue; }
       hits.Append(Hit{hit, p, p}) iferr_return;
     }
+    if (wire_prefs::Enabled(NODESTROKE_PREFS_LOG)) {
+      // Diagnostics only: a node whose asset cannot be read must not stop the stroke.
+      maxon::String hitLog = FormatString("gesture: connect hit @ node(s)", hits.GetCount());
+      for (Int i = 0; i < hits.GetCount(); ++i) {
+        iferr (const maxon::IdAndVersion asset = hits[i].node->node.GetValue(maxon::nodes::AssetId).GetOrDefault()) continue;
+        hitLog += FormatString(" #@=@", i, asset.first.ToString());
+      }
+      DebugLog(hitLog);
+    }
     if (hits.GetCount() < 2) {
       StatusSetText(GeLoadString(IDS_GESTURE_TWO_NODES));
       return maxon::OK;
@@ -1438,6 +1533,7 @@ maxon::Result<void> Execute(Mode mode, HWND canvas, const maxon::BaseArray<Scree
     const Hit& tail = hits[hits.GetCount() - 1];
     const maxon::GraphNode startPort = PortAt(*head.node, head.first, true);
     maxon::GraphNode endPort = PortAt(*tail.node, tail.last, false);
+    DebugLog(FormatString("gesture: connect exact startOutput=@ endInput=@", startPort.IsValid(), endPort.IsValid()));
     // Decide every link before the transaction, since a popup menu may be needed.
     // Precedence: exact ports under the stroke > user rules > the first free shown
     // input (top to bottom, as the user reads the node) > Redshift workflow rules
@@ -1474,16 +1570,22 @@ maxon::Result<void> Execute(Mode mode, HWND canvas, const maxon::BaseArray<Scree
         plan.rs = wire_rs::Suggest(source, fixedOut, target) iferr_return;
         if (!plan.rs.IsValid() && hits.GetCount() == 2) {
           fixedIn = PickInput(source, fixedOut, target, rules) iferr_return;
-          if (!fixedIn.IsValid()) return maxon::OK;  // menu cancelled or nothing fits
+          if (!fixedIn.IsValid()) {
+            DebugLog("gesture: connect no compatible selected or free input"_s);
+            return maxon::OK;  // menu cancelled or nothing fits
+          }
         }
       }
       if (!plan.rs.IsValid()) {
         plan.exact = wire_ops::ChoosePortPair(source, target, fixedOut, fixedIn, rules, true) iferr_return;
-        if (!plan.exact.out.IsValid())
+        if (!plan.exact.out.IsValid()) {
+          DebugLog("gesture: connect no connectable port pair"_s);
           return maxon::IllegalStateError(MAXON_SOURCE_LOCATION, GeLoadString(IDS_GESTURE_NOT_CONNECTABLE));
+        }
       }
       plans.Append(std::move(plan)) iferr_return;
     }
+    DebugLog(FormatString("gesture: connect planned @ link(s)", plans.GetCount()));
     maxon::GraphTransaction transaction = graph.BeginTransaction() iferr_return;
     for (const Plan& plan : plans) {
       if (plan.rs.IsValid()) { wire_rs::Apply(graph, plan.rs) iferr_return; }
@@ -1493,6 +1595,7 @@ maxon::Result<void> Execute(Mode mode, HWND canvas, const maxon::BaseArray<Scree
       }
     }
     transaction.Commit() iferr_return;
+    DebugLog(FormatString("gesture: connect committed @ link(s)", plans.GetCount()));
     StatusSetText(GeLoadString(IDS_GESTURE_CONNECTED, String::IntToString(hits.GetCount())));
     return maxon::OK;
   }
@@ -1504,6 +1607,7 @@ maxon::Result<void> Execute(Mode mode, HWND canvas, const maxon::BaseArray<Scree
   for (const WireGeom& wire : wires) {
     if (StrokeCutsWire(stroke, wire.curve, margin)) { cuts.Append(Cut{wire.out, wire.in}) iferr_return; }
   }
+  DebugLog(FormatString("gesture: cut found @ wire(s), candidates=@", cuts.GetCount(), wires.GetCount()));
   if (cuts.IsEmpty()) {
     StatusSetText(GeLoadString(IDS_GESTURE_NO_WIRES));
     return maxon::OK;
@@ -1513,6 +1617,7 @@ maxon::Result<void> Execute(Mode mode, HWND canvas, const maxon::BaseArray<Scree
     maxon::GraphModelHelper::RemoveConnection(c.out, c.in) iferr_return;
   }
   transaction.Commit() iferr_return;
+  DebugLog(FormatString("gesture: cut committed @ wire(s)", cuts.GetCount()));
   StatusSetText(GeLoadString(IDS_GESTURE_CUT, String::IntToString(cuts.GetCount())));
   return maxon::OK;
 }
@@ -1551,10 +1656,10 @@ public:
 };
 }
 
-// Kept out of the Extensions menu; available in the Commander for a shortcut.
+// Listed under Extensions > NodeStroke (main.cpp) and in the Commander.
 Bool RegisterCanvasGestures() {
   if (!RegisterMessagePlugin(kGestureMessageId, "NodeStroke Gestures"_s, 0, NewObjClear(GestureMessage))) return false;
-  return RegisterCommandPlugin(kToggleId, GeLoadString(IDS_CMD_TOGGLE), PLUGINFLAG_HIDEPLUGINMENU, nullptr,
+  return RegisterCommandPlugin(kToggleId, GeLoadString(IDS_CMD_TOGGLE), PLUGINFLAG_HIDEPLUGINMENU, AutoBitmap("icon.png"_s),
     GeLoadString(IDS_CMD_TOGGLE_HELP), NewObjClear(ToggleCommand));
 }
 void ApplyGesturePrefs() {

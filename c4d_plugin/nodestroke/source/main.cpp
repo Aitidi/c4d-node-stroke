@@ -102,6 +102,52 @@ public:
     return true;
   }
 };
+
+// Extensions > NodeStroke with the plugin icon: the gesture switch and the settings.
+// Cinema 4D's own per-folder plugin submenus can't show an icon, so the commands
+// hide from them (PLUGINFLAG_HIDEPLUGINMENU) and are listed here.
+constexpr Int32 kToggleId = 1072550;  // canvas_gesture.cpp
+BaseContainer NodeStrokeMenu() {
+  BaseContainer sub;
+  sub.InsData(MENURESOURCE_SUBTITLE, "NodeStroke"_s);
+  sub.InsData(MENURESOURCE_SUBTITLE_ICONID, kToggleId);
+  for (const Int32 id : {kToggleId, kSettingsCommandId})
+    sub.InsData(MENURESOURCE_COMMAND, FormatString("PLUGIN_CMD_@", id));
+  return sub;
+}
+// Plugin managers such as Boghma build a NodeStroke submenu of their own from the
+// plugin folder's visible plugins, which hides our commands and has no icon. Gives
+// those submenus our icon and commands. Returns the number repaired.
+Int FixForeignMenus(BaseContainer& menu) {
+  Int fixed = 0;
+  for (Int32 i = 0; menu.GetIndexId(i) != NOTOK; ++i) {
+    const GeData* data = menu.GetIndexData(i);
+    if (!data || data->GetType() != DA_CONTAINER) continue;
+    BaseContainer sub = *data->GetContainer();
+    if (sub.GetString(MENURESOURCE_SUBTITLE).StartsWith("NodeStroke"_s) && sub.GetInt32(MENURESOURCE_SUBTITLE_ICONID) != kToggleId) {
+      menu.SetIndexData(i, GeData(NodeStrokeMenu()));
+      ++fixed;
+    } else if (const Int count = FixForeignMenus(sub)) {
+      menu.SetIndexData(i, GeData(sub));
+      fixed += count;
+    }
+  }
+  return fixed;
+}
+void BuildMenu() {
+  BaseContainer* main = GetMenuResource("M_EDITOR"_s);
+  if (!main) return;
+  FixForeignMenus(*main);
+  for (Int32 i = 0; main->GetIndexId(i) != NOTOK; ++i) {
+    const GeData* data = main->GetIndexData(i);
+    if (!data || data->GetType() != DA_CONTAINER || data->GetContainer()->GetString(MENURESOURCE_SUBTITLE) != "IDS_EDITOR_PIPELINE"_s) continue;
+    BaseContainer extensions = *data->GetContainer();
+    extensions.InsData(MENURESOURCE_SUBMENU, GeData(NodeStrokeMenu()));
+    main->SetIndexData(i, GeData(extensions));
+    return;
+  }
+  main->InsData(MENURESOURCE_SUBMENU, GeData(NodeStrokeMenu()));  // no Extensions menu
+}
 }
 Bool cinema::PluginStart() {
   if (!RegisterWirePrefs()) return false;
@@ -109,13 +155,13 @@ Bool cinema::PluginStart() {
   if (!wire_rs::RegisterPlacement()) return false;
   if (!RegisterGraphOps()) return false;
   if (!RegisterCanvasGestures()) return false;
-  if (!RegisterCommandPlugin(kDisconnectId, GeLoadString(IDS_CMD_DISCONNECT), PLUGINFLAG_HIDEPLUGINMENU, nullptr,
+  if (!RegisterCommandPlugin(kDisconnectId, GeLoadString(IDS_CMD_DISCONNECT), PLUGINFLAG_HIDEPLUGINMENU, AutoBitmap("icon.png"_s),
     GeLoadString(IDS_CMD_DISCONNECT_HELP), NewObjClear(SelectionCommand, 0))) return false;
-  if (!RegisterCommandPlugin(kCutId, GeLoadString(IDS_CMD_CUT), PLUGINFLAG_HIDEPLUGINMENU, nullptr,
+  if (!RegisterCommandPlugin(kCutId, GeLoadString(IDS_CMD_CUT), PLUGINFLAG_HIDEPLUGINMENU, AutoBitmap("icon.png"_s),
     GeLoadString(IDS_CMD_CUT_HELP), NewObjClear(SelectionCommand, 1))) return false;
-  if (!RegisterCommandPlugin(kExtractId, GeLoadString(IDS_CMD_EXTRACT), PLUGINFLAG_HIDEPLUGINMENU, nullptr,
+  if (!RegisterCommandPlugin(kExtractId, GeLoadString(IDS_CMD_EXTRACT), PLUGINFLAG_HIDEPLUGINMENU, AutoBitmap("icon.png"_s),
     GeLoadString(IDS_CMD_EXTRACT_HELP), NewObjClear(SelectionCommand, 3))) return false;
-  return RegisterCommandPlugin(kConnectId, GeLoadString(IDS_CMD_CONNECT), PLUGINFLAG_HIDEPLUGINMENU, nullptr,
+  return RegisterCommandPlugin(kConnectId, GeLoadString(IDS_CMD_CONNECT), PLUGINFLAG_HIDEPLUGINMENU, AutoBitmap("icon.png"_s),
     GeLoadString(IDS_CMD_CONNECT_HELP), NewObjClear(SelectionCommand, 2));
 }
 void cinema::PluginEnd() {
@@ -124,6 +170,13 @@ void cinema::PluginEnd() {
 }
 Bool cinema::PluginMessage(Int32 id, void*) {
   if (id == C4DPL_INIT_SYS) return g_resource.Init();
-  if (id == C4DPL_PROGRAM_STARTED) { StartCanvasGestures(); return true; }
+  if (id == C4DPL_BUILDMENU) { BuildMenu(); return true; }
+  if (id == C4DPL_PROGRAM_STARTED) {
+    // Other plugin managers may build their menus after ours.
+    BaseContainer* main = GetMenuResource("M_EDITOR"_s);
+    if (main && FixForeignMenus(*main)) UpdateMenus();
+    StartCanvasGestures();
+    return true;
+  }
   return false;
 }

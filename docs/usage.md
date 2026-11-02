@@ -118,7 +118,9 @@ A rule says: "when connecting a node of type A to a node of type B, use this out
 
 ## 10. Commands and shortcuts
 
-The commands are not in the Extensions menu. Find them by searching "NodeStroke" in the **Commander** (Shift+C), or assign shortcuts in **Window > Customization > Customize Commands**.
+**Extensions > NodeStroke** has two commands: **NodeStroke** turns all gestures on or off, and **NodeStroke Settings...** opens the settings page (see [11. Settings](#11-settings)). Plugin managers such as Boghma that list NodeStroke in their own menu show the same two commands with the NodeStroke icon.
+
+The commands below are not in the Extensions menu. Find them by searching "NodeStroke" in the **Commander** (Shift+C), or assign shortcuts in **Window > Customization > Customize Commands**.
 
 Before running a command, select the node material in the Material Manager and the elements in the node graph.
 
@@ -134,8 +136,6 @@ Before running a command, select the node material in the Material Manager and t
 | Insert Node Into Selected Wire | Inserts the selected node into the selected wire (or select the two nodes the wire joins plus the node to insert) |
 | Add Rule From Selected Ports | Connects the selected port pair and saves it as a rule |
 | Edit Connection Rules | Opens the rules window |
-| Toggle Canvas Gestures | Turns all gestures on or off |
-
 ## 11. Settings
 
 **Edit > Preferences > NodeStroke**:
