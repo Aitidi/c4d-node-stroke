@@ -2,6 +2,8 @@
 
 English | [简体中文](README.zh-CN.md)
 
+**C4D 2026 compatibility preview:** a 2026.0.0 SDK build entry and typed-layout fallback are now available. Exact drawlist positions and group interface ports are not yet ported. See the [2026 compatibility notes](docs/compatibility-2026.md) (Chinese) for build steps and validation limits. The guide below describes the original 2027 release.
+
 NodeStroke lets you connect, cut and tidy wires in the Cinema 4D node editor by drawing strokes while holding a key. It is a C++ SDK plugin for Cinema 4D 2027.0 on Windows (Redshift node materials).
 
 ![NodeStroke demo: drawing connections, cutting wires and adding a Displacement node in the node editor](docs/media/demo.gif)

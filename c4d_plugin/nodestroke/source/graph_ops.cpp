@@ -127,7 +127,7 @@ maxon::Result<PortPair> ChoosePorts(const GraphNode& source, const GraphNode& ta
   return PortPair{};
 }
 
-// Graph-space x of a node from the undocumented 2027 layout data, used only to
+// Graph-space x of a node from the undocumented 2026/2027 layout data, used only to
 // order a selection left to right. Falls back to selection order when unavailable.
 Float32 NodeX(const GraphNode& node, Int fallback) {
   iferr (const maxon::BaseArray<wire_native::NodeRecord> records = wire_native::ReadNodePositions(node))

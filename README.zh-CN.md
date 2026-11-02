@@ -2,6 +2,8 @@
 
 [English](README.md) | 简体中文
 
+**C4D 2026 适配预览**：已新增 2026.0.0 SDK 构建入口及类型化布局读取降级路径；精确端口定位和组接口尚未适配。构建步骤、限制与验收项见 [2026 适配记录](docs/compatibility-2026.md)。下文描述原有 2027 版本。
+
 NodeStroke 让你在 Cinema 4D 节点编辑器里用键盘加划线来连接、切断和整理连线。它是 C++ SDK 插件，支持 Windows 上的 Cinema 4D 2027.0（Redshift 节点材质）。
 
 ![NodeStroke 演示：在节点编辑器中绘制连接、切断连线、自动添加 Displacement 节点](docs/media/demo.gif)
