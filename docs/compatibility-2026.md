@@ -10,12 +10,12 @@ NodeStroke can be built for Cinema 4D 2026 with the 2026.0.0 C++ SDK. The 2026 b
 | --- | --- | --- |
 | I connect, Y cut, undo | Yes | Yes |
 | Automatic Bump / Displacement / Output nodes | Yes | Yes |
-| Exact node and port positions from drawing data | Yes | No: estimated from the layout records |
+| Exact node and port positions from drawing data | Yes | 2026.4.0 only; other builds estimate from the layout records |
 | Gestures without calibrating the canvas first | Yes | No: scroll or middle-drag the canvas once |
 | Wires between nodes inside a group | Yes | Yes |
-| Wires to the group's interface ports (the left and right edges of the group view) | Yes | No: they cannot be connected or cut by drawing |
+| Wires to the group's interface ports (the left and right edges of the group view) | Yes | 2026.4.0 only; other builds cannot connect or cut them |
 
-On 2026 the plugin reads node and view layout through typed `GraphNode` attributes only. Every dictionary, tuple and numeric value is still checked, and a read that does not match is refused. The 2027 raw-memory offsets and module hashes in `group_native_access.h` are unchanged and stay disabled on 2026.
+On 2026 the plugin reads node and view layout through typed `GraphNode` attributes. Every dictionary, tuple and numeric value is checked, and a read that does not match is refused. Exact positions and group interface ports come from the node editor's drawing data (read-only), as on 2027. `group_native_access.h` holds the raw-memory offsets for two builds, 2027.0 and 2026.4.0, and uses them only when all four host modules match that build's SHA-256 hashes; on any other 2026 build this stays off and the plugin falls back to the layout records. The drawing data and presenter layout of 2026.4.0 are the same as 2027.0; only the module hashes and four module addresses differ. The 2027 entries are unchanged.
 
 A canvas calibration on 2026 survives graph transactions (for example automatic Bump node creation) and clicks outside the canvas. After a transaction it follows the node editor view with the same key, zoom and offset; if no single view matches, scroll the canvas again. Double-clicking into a group always clears it. 2027 keeps its original rules.
 
@@ -46,7 +46,7 @@ Output: `dist/NodeStroke-C4D2026-preview.zip`.
 - Group port label tests: `py -3 -m unittest discover -s tests -p test_*.py`
 - Host registration: run `tests/host_smoke.py` in Cinema 4D with the plugin loaded; all 11 commands must be present.
 
-Checked in the Cinema 4D 2026.4.0 GUI: loading, I connect, Y cut, undo, drawing again right after an automatic Bump or Output node was created without scrolling, and connecting and cutting wires between nodes inside a group after recalibrating there.
+Checked in the Cinema 4D 2026.4.0 GUI: loading, I connect, Y cut, undo, drawing again right after an automatic Bump or Output node was created without scrolling, connecting and cutting wires between nodes inside a group after recalibrating there, and connecting and cutting wires to the group's interface ports.
 
 Still to check before a non-preview release:
 

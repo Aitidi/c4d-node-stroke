@@ -15,7 +15,7 @@ extern "C" __declspec(dllexport) void probe_group_steps(void* hwnd, unsigned lon
   using namespace wire_group_native;
   if (!values) return;
   for (int i = 0; i < 10; ++i) values[i] = 0;
-  values[0] = SupportedBuild();
+  values[0] = SupportedBuild() != nullptr;
   if (!values[0]) return;
   const Address os = WindowObject(static_cast<HWND>(hwnd)); values[1] = os;
   if (!os) return;

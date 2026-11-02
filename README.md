@@ -2,7 +2,7 @@
 
 English | [简体中文](README.zh-CN.md)
 
-**Cinema 4D 2026 (preview):** NodeStroke can also be built for Cinema 4D 2026. The core gestures work, but exact port positions are not supported yet, wires to a group's interface ports cannot be connected or cut, and the canvas must be scrolled once before drawing. See [Cinema 4D 2026 compatibility](docs/compatibility-2026.md). The rest of this page describes the 2027 release.
+**Cinema 4D 2026 (preview):** NodeStroke can also be built for Cinema 4D 2026. The core gestures work, and the canvas must be scrolled once before drawing. On 2026.4.0, exact port positions and wires to a group's interface ports work as on 2027; other 2026 builds estimate positions and cannot connect or cut wires to group interface ports. See [Cinema 4D 2026 compatibility](docs/compatibility-2026.md). The rest of this page describes the 2027 release.
 
 NodeStroke lets you connect, cut and tidy wires in the Cinema 4D node editor by drawing strokes while holding a key. It is a C++ SDK plugin for Cinema 4D 2027.0 on Windows (Redshift node materials).
 
@@ -49,7 +49,7 @@ The commands choose ports in this order: custom rules, then a free input of the 
 
 ## How it works
 
-The node editor has no public API for canvas coordinates. The canvas gestures read the node editor's own view records and drawing data (read-only) to locate nodes and ports. This is tuned for Cinema 4D 2027.0 and checked against module SHA-256 hashes; on any other build, exact positions and group interface support turn themselves off, and the canvas must be scrolled once before gestures work. Investigation notes (in Chinese) are in `docs/investigation.md`.
+The node editor has no public API for canvas coordinates. The canvas gestures read the node editor's own view records and drawing data (read-only) to locate nodes and ports. This is tuned for Cinema 4D 2027.0 (and 2026.4.0) and checked against module SHA-256 hashes; on any other build, exact positions and group interface support turn themselves off, and the canvas must be scrolled once before gestures work. Investigation notes (in Chinese) are in `docs/investigation.md`.
 
 The plugin IDs 1072547–1072560 are registered with Maxon.
 

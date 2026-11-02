@@ -7,8 +7,8 @@ template <typename Pair,typename Record,typename MakeRecord,typename Validate>
 maxon::Result<maxon::BaseArray<Record>> ReadRecords(const maxon::GraphNode& node,const char* attribute,MakeRecord make,Validate validate) {
  iferr_scope;
  // This path reads typed GraphNode attributes, never raw presenter memory.
- // 2026 uses the calibrated fallback; every dictionary/tuple is still checked
- // below. Exact drawlist access has a separate, unchanged module-hash gate.
+ // Every dictionary/tuple is checked below. Exact drawlist access (2027.0 and
+ // 2026.4.0) has a separate module-hash gate; other 2026 builds calibrate.
  const Int32 version = GetC4DVersion();
  if (version < 2026000 || version > 2027000)
    return maxon::IllegalStateError(MAXON_SOURCE_LOCATION,"Unsupported Cinema 4D version for experimental layout reader."_s);

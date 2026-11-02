@@ -137,9 +137,9 @@ struct State {
 State g;
 void DebugLog(const maxon::String& text);
 
-// Cinema 4D 2026 has no exact drawing data, so its calibrations must survive
-// graph transactions and off-canvas clicks (helper placement sends both).
-// 2027 keeps its original, stricter invalidation rules.
+// Cinema 4D 2026 builds other than 2026.4.0 have no exact drawing data, so 2026
+// calibrations must survive graph transactions and off-canvas clicks (helper
+// placement sends both). 2027 keeps its original, stricter invalidation rules.
 Bool KeepsCalibrationAcrossTransactions() { return GetC4DVersion() < 2027000; }
 
 Bool IsCanvasCandidate(HWND hwnd) {
@@ -882,8 +882,9 @@ Bool PresentedPortsMatch(wire_group_native::Address model, const maxon::BaseArra
   using namespace wire_group_native;
   presentedIns.Flush();
   presentedOuts.Flush();
+  const Build* build = SupportedBuild();
   const Address module = reinterpret_cast<Address>(GetModuleHandleW(L"c4d_nodeeditor.xdl64"));
-  const Address infoOffset = module ? Word(module + 0x28f750) : 0;
+  const Address infoOffset = build && module ? Word(module + build->portInterface) : 0;
   if (!infoOffset || infoOffset > 0x100000) { DebugLog("group presenter: invalid interface offset"_s); return false; }
   std::unordered_set<Address> visited;
   // Port lists are named from inside the group: a group output receives inner
