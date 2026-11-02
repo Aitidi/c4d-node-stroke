@@ -2,7 +2,7 @@
 
 [English](README.md) | 简体中文
 
-**Cinema 4D 2026（预览）**：NodeStroke 也可以构建为 Cinema 4D 2026 版本。核心手势可用，但精确端口定位和组接口端口尚不支持，划线前需先滚动一次画布。详见 [Cinema 4D 2026 适配](docs/compatibility-2026.zh-CN.md)。本页其余内容描述 2027 版本。
+**Cinema 4D 2026（预览）**：NodeStroke 也可以构建为 Cinema 4D 2026 版本。核心手势可用，但尚不支持精确端口定位，连到组接口端口的连线无法连接或切断，划线前需先滚动一次画布。详见 [Cinema 4D 2026 适配](docs/compatibility-2026.zh-CN.md)。本页其余内容描述 2027 版本。
 
 NodeStroke 让你在 Cinema 4D 节点编辑器里用键盘加划线来连接、切断和整理连线。它是 C++ SDK 插件，支持 Windows 上的 Cinema 4D 2027.0（Redshift 节点材质）。
 

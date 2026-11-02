@@ -12,7 +12,8 @@ NodeStroke can be built for Cinema 4D 2026 with the 2026.0.0 C++ SDK. The 2026 b
 | Automatic Bump / Displacement / Output nodes | Yes | Yes |
 | Exact node and port positions from drawing data | Yes | No: estimated from the layout records |
 | Gestures without calibrating the canvas first | Yes | No: scroll or middle-drag the canvas once |
-| Group interface ports | Yes | No |
+| Wires between nodes inside a group | Yes | Yes |
+| Wires to the group's interface ports (the left and right edges of the group view) | Yes | No: they cannot be connected or cut by drawing |
 
 On 2026 the plugin reads node and view layout through typed `GraphNode` attributes only. Every dictionary, tuple and numeric value is still checked, and a read that does not match is refused. The 2027 raw-memory offsets and module hashes in `group_native_access.h` are unchanged and stay disabled on 2026.
 
@@ -45,11 +46,11 @@ Output: `dist/NodeStroke-C4D2026-preview.zip`.
 - Group port label tests: `py -3 -m unittest discover -s tests -p test_*.py`
 - Host registration: run `tests/host_smoke.py` in Cinema 4D with the plugin loaded; all 11 commands must be present.
 
-Checked in the Cinema 4D 2026.4.0 GUI: loading, I connect, Y cut, undo, and drawing again right after an automatic Bump or Output node was created, without scrolling.
+Checked in the Cinema 4D 2026.4.0 GUI: loading, I connect, Y cut, undo, drawing again right after an automatic Bump or Output node was created without scrolling, and connecting and cutting wires between nodes inside a group after recalibrating there.
 
 Still to check before a non-preview release:
 
-- Multiple node editor windows and switching between groups
+- Multiple node editor windows
 - Shake to disconnect and drop onto a wire
 - 100% and 150% display scaling
 - A build with the Visual Studio 2022 (v143) toolchain

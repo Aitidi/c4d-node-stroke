@@ -2,7 +2,7 @@
 
 English | [简体中文](README.zh-CN.md)
 
-**Cinema 4D 2026 (preview):** NodeStroke can also be built for Cinema 4D 2026. The core gestures work, but exact port positions and group interface ports are not supported yet, and the canvas must be scrolled once before drawing. See [Cinema 4D 2026 compatibility](docs/compatibility-2026.md). The rest of this page describes the 2027 release.
+**Cinema 4D 2026 (preview):** NodeStroke can also be built for Cinema 4D 2026. The core gestures work, but exact port positions are not supported yet, wires to a group's interface ports cannot be connected or cut, and the canvas must be scrolled once before drawing. See [Cinema 4D 2026 compatibility](docs/compatibility-2026.md). The rest of this page describes the 2027 release.
 
 NodeStroke lets you connect, cut and tidy wires in the Cinema 4D node editor by drawing strokes while holding a key. It is a C++ SDK plugin for Cinema 4D 2027.0 on Windows (Redshift node materials).
 

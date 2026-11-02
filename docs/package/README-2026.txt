@@ -18,11 +18,14 @@ If holding I or Y draws nothing, scroll the canvas again.
 兼容状态 / Compatibility status
 这是适配预览版，已在 Cinema 4D 2026.4.0 中验证 I 连接、Y 切线、撤销，
 以及自动创建 Bump/Output 节点后继续划线。
-节点和端口位置按布局记录估算；精确端口定位和组接口端口尚不支持。
+节点和端口位置按布局记录估算，尚不支持精确端口定位。
+组内节点之间的连线可以划线操作；连到组左右两侧接口端口的连线
+无法通过划线连接或切断。
 This is a compatibility preview, checked in Cinema 4D 2026.4.0 for I connections,
 Y cuts, undo, and drawing again after automatic Bump/Output node creation.
 Node and port positions are estimated from layout records; exact port positions
-and group interface ports are not supported yet.
+are not supported yet. Inside a group, wires between nodes work, but wires to the
+group's interface ports (its left and right edges) cannot be connected or cut.
 
 按住 I 移动鼠标连线，按住 Y 移动鼠标切线，松键执行。
 设置：编辑 > 设置 > NodeStroke；命令：Commander 中搜索 NodeStroke。
