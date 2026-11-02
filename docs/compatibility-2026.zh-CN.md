@@ -1,19 +1,19 @@
-# Cinema 4D 2026 适配（预览）
+# Cinema 4D 2026 适配
 
 [English](compatibility-2026.md) | 简体中文
 
-NodeStroke 可以用 2026.0.0 C++ SDK 构建出 Cinema 4D 2026 版本。2026 版是适配预览：核心手势可用，但 2027 版的部分功能尚不支持。
+NodeStroke 通过单独用 2026.0.0 C++ SDK 构建的版本支持 Cinema 4D 2026。所有手势可用；需先滚动一次画布，2026.4.0 之前的版本没有精确位置和组接口端口。
 
 ## 功能对照
 
-| 功能 | 2027.0 | 2026 预览 |
+| 功能 | 2027 | 2026 |
 | --- | --- | --- |
 | I 连接、Y 切断、撤销 | 支持 | 支持 |
 | 自动创建 Bump / Displacement / Output 节点 | 支持 | 支持 |
-| 从绘制数据读取精确的节点和端口位置 | 支持 | 仅 2026.4.0；其他版本按布局记录估算 |
+| 从绘制数据读取精确的节点和端口位置 | 支持 | 2026.4.0 支持；更早的版本按布局记录估算 |
 | 无需先校准画布即可划线 | 支持 | 不支持：先在画布上滚动或中键平移一次 |
 | 组内节点之间的连线 | 支持 | 支持 |
-| 连到组接口端口的连线（组视图左右两侧） | 支持 | 仅 2026.4.0；其他版本无法连接或切断 |
+| 连到组接口端口的连线（组视图左右两侧） | 支持 | 2026.4.0 支持；更早的版本无法连接或切断 |
 
 在 2026 上，插件通过 `GraphNode` 的类型化属性读取节点和视图布局。每个字典、元组和数值都会检查，不匹配时拒绝该次读取。精确位置和组接口端口与 2027 一样来自节点编辑器的绘制数据（只读）。`group_native_access.h` 保存 2027.0 和 2026.4.0 两个版本的内存偏移，只有四个宿主模块的 SHA-256 哈希全部与某一版本一致时才启用；其他 2026 版本不启用，退回布局记录。2026.4.0 的绘制数据和 presenter 布局与 2027.0 相同，只有模块哈希和四个模块内地址不同。2027 的条目保持不变。
 
@@ -25,21 +25,12 @@ NodeStroke 可以用 2026.0.0 C++ SDK 构建出 Cinema 4D 2026 版本。2026 版
 
 ```powershell
 Expand-Archive -LiteralPath .\Cinema_4D_CPP_SDK_2026_0_0.zip -DestinationPath .\sdk-2026.0.0
-.\tools\build-2026.ps1
+.\tools\build-release.ps1 -Versions 2026
 ```
 
-脚本会检查 SDK 的 API 和 ABI 版本都是 `2026000`，并拒绝更新的 SDK（例如 2026.4 安装目录附带的 SDK）。构建目录固定为 `build-c4d-2026.0.0/`，不复用其他 SDK 的缓存。默认使用 Visual Studio 2022；如需其他工具链，传入 `-Generator` 和 `-PythonExecutable`。
+脚本会检查 SDK 的 API 和 ABI 版本都是 `2026000`，并拒绝更新的 SDK（例如 2026.4 安装目录附带的 SDK）。构建目录固定为 `build-c4d-2026.0.0/`，不复用其他 SDK 的缓存，并用 `docs/package/README-2026.txt` 打包出 `dist/NodeStroke-C4D2026.zip`。默认使用 Visual Studio 2022；如需其他工具链，传入 `-Generator` 和 `-PythonExecutable`。
 
 2026 SDK 通过 `projectdefinition.txt` 发现插件。插件的 `CMakeLists.txt` 调用 SDK 自带的生成器转换该文件后直接返回；2027 SDK 不读取 `projectdefinition.txt`，使用该代码块之后的 CMake 设置。两个文件中的依赖列表和模块 ID 需保持一致。
-
-## 打包
-
-```powershell
-.\tools\package.ps1 -BuildDirectory build-c4d-2026.0.0 -PackageName NodeStroke-C4D2026-preview -Readme docs/package/README-2026.txt
-```
-
-产物：`dist/NodeStroke-C4D2026-preview.zip`。
-
 ## 测试
 
 - 模型测试：`ctest --test-dir build -C Debug --output-on-failure`
@@ -48,7 +39,7 @@ Expand-Archive -LiteralPath .\Cinema_4D_CPP_SDK_2026_0_0.zip -DestinationPath .\
 
 已在 Cinema 4D 2026.4.0 界面中确认：插件加载、I 连接、Y 切断、撤销，自动创建 Bump 或 Output 节点后无需滚动即可继续划线，进组重新校准后连接和切断组内节点之间的连线，以及连接和切断连到组接口端口的连线。
 
-发布正式版前仍需检查：
+尚未检查：
 
 - 多个节点编辑器窗口
 - 摇晃摘线和拖入插线

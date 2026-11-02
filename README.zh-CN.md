@@ -1,72 +1,50 @@
-# NodeStroke for Cinema 4D 2027
+# NodeStroke for Cinema 4D
 
 [English](README.md) | 简体中文
 
-**Cinema 4D 2026（预览）**：NodeStroke 也可以构建为 Cinema 4D 2026 版本。核心手势可用，划线前需先滚动一次画布。在 2026.4.0 上，精确端口定位和连到组接口端口的连线与 2027 一样可用；其他 2026 版本按布局记录估算位置，连到组接口端口的连线无法连接或切断。详见 [Cinema 4D 2026 适配](docs/compatibility-2026.zh-CN.md)。本页其余内容描述 2027 版本。
+NodeStroke 让你在 Cinema 4D 节点编辑器里按住一个键划线，来连接、切断和整理连线。它是 Windows 上用于 Redshift 节点材质的 C++ SDK 插件。
 
-NodeStroke 让你在 Cinema 4D 节点编辑器里用键盘加划线来连接、切断和整理连线。它是 C++ SDK 插件，支持 Windows 上的 Cinema 4D 2027.0（Redshift 节点材质）。
+| Cinema 4D | 状态 |
+| --- | --- |
+| 2027+ | 支持 |
+| 2026+ | 支持。第一次划线前需先滚动一次画布。2026.4.0 之前的版本位置为估算，连到组接口端口的连线无法连接或切断 |
 
 ![NodeStroke 演示：在节点编辑器中绘制连接、切断连线、自动添加 Displacement 节点](docs/media/demo.gif)
 
-[观看 MP4 版演示](docs/media/demo.mp4)
-
-下载：见 [Releases](../../releases)。完整说明见 **[使用文档](docs/usage.zh-CN.md)**。
+[观看 MP4 版演示](docs/media/demo.mp4) · 下载：[Releases](../../releases) · 完整说明：**[使用文档](docs/usage.zh-CN.md)**
 
 ## 功能
 
 鼠标放在节点编辑器画布上：
 
-- **按住 I 并移动鼠标**：划过的节点或端口按顺序连接；从端口划到端口可精确指定端口。
+- **按住 I 并移动鼠标**：按顺序连接划过的节点或端口。
 - **按住 Y 并移动鼠标**：切断划过的连线。
-- **拖动节点并左右快速摇晃**：把节点从连线中摘出，上下游自动接上。
-- **把没有连线的节点拖到一根连线上停一下**：插入到这根线中。
+- **拖动节点并左右摇晃**：把节点从连线中摘出，上下游自动接上。
+- **把没有连线的节点拖到连线上停一下**：插入到这根线中。
 
-松开按键时执行，所有操作都能用 Ctrl+Z 撤销。支持节点组和组接口端口。连到材质的凹凸输入或 Output 的置换输入时，会自动添加 Bump Map / Displacement 节点。
+松开按键时执行，Ctrl+Z 可撤销。节点组内和组接口端口都能用。连到凹凸或置换输入时，会自动添加 Bump Map 或 Displacement 节点。
 
-## 设置
-
-**编辑 > 设置 > NodeStroke**：分别开关各手势、编辑连接规则、开启诊断日志（默认关闭；开启后手势未生效的原因写入偏好目录的 `nodestroke_debug.txt`）。设置随 C4D 偏好保存。界面文字跟随 C4D 界面语言（简体中文 / 英文）。
-
-## 命令
-
-**扩展 > NodeStroke** 里有两个命令：`NodeStroke` 开启或关闭画布手势（与设置页的“启用手势”是同一个开关），`NodeStroke 设置...` 打开偏好设置页。如果 Boghma 等插件管理器在自己的菜单里列出了 NodeStroke，那一项也会带上同样的图标和这两个命令。
-
-以下命令不出现在扩展菜单中，可在命令管理器（Commander）里搜索，或在自定义命令里绑定快捷键。使用前先在材质管理器中选中目标节点材质，并在节点图中选中相应元素。
-
-| 命令 | 用法 |
-| --- | --- |
-| `NodeStroke: Disconnect Selected Nodes` | 断开所选节点的所有连接 |
-| `NodeStroke: Cut Selected Wires` | 删除所选连线 |
-| `NodeStroke: Extract Selected Nodes` | 把所选节点从连线中取出，上游直接接到下游 |
-| `NodeStroke: Connect Selected Ports` | 选一个输出口和一个输入口后连接；输入口已有连线则替换 |
-| `NodeStroke: Chain Connect Selected Nodes` | 所选节点按画布从左到右依次相连，自动挑选端口 |
-| `NodeStroke: Fan Out From Leftmost Node` | 最左节点连到其余每个节点 |
-| `NodeStroke: Fan In To Rightmost Node` | 其余节点依次接入最右节点的空闲输入 |
-| `NodeStroke: Insert Node Into Selected Wire` | 选一条连线和一个节点；或选连线两端的节点加要插入的节点 |
-| `NodeStroke: Add Rule From Selected Ports` | 选一对端口：连接并记为这两种节点之间的默认端口 |
-| `NodeStroke: Edit Connection Rules` | 规则窗口：查看、从所选端口添加、删除规则（规则文件 `<偏好目录>/nodestroke_rules.txt`）|
-命令自动挑选端口的顺序：自定义规则 → 同类型族（如 col3/col4）的空闲输入 → 任意可连接的空闲输入 → 替换已占用输入（扇入不替换）。划线的顺序不同，见[端口是怎么选的](docs/usage.zh-CN.md#8-端口是怎么选的)。所有修改在一个图事务中完成，可撤销。
+**扩展 > NodeStroke** 可以开关手势（开启时显示勾选）并打开设置。依次连接、分发等更多命令在命令管理器（Commander）里。设置位于 **编辑 > 设置 > NodeStroke**。界面跟随 C4D 界面语言（简体中文 / 英文）。
 
 ## 实现说明
 
-节点编辑器没有公开画布坐标的 API。画布手势读取节点编辑器自身的视图记录与绘制数据（只读）来确定节点和端口位置，这部分按 C4D 2027.0（及 2026.4.0）调校，并用模块 SHA-256 校验版本；版本不匹配时精确定位与组接口功能自动停用，需先在画布上滚动一次再使用手势。调查记录见 `docs/investigation.md`。
+节点编辑器没有公开画布坐标的 API。NodeStroke 读取节点编辑器自身的视图记录与绘制数据（只读）来确定节点和端口位置。这部分按 2027.0 和 2026.4.0 调校，并用模块 SHA-256 校验版本；其他版本上精确定位与组接口端口自动停用，需先滚动一次画布再划线。调查记录见 `docs/investigation.md`，2026 的细节见 [Cinema 4D 2026 适配](docs/compatibility-2026.zh-CN.md)。
 
 插件 ID 1072547–1072560 和 1073003 已在 Maxon 注册。
 
 ## 构建
 
-需要 Cinema 4D 2027.0.0 C++ SDK（解压到仓库根目录的 `sdk/`，不纳入 Git）、CMake、Visual Studio 2022 和 Windows SDK：
+需要 CMake、Visual Studio 2022、Windows SDK，以及解压到仓库根目录的 Cinema 4D C++ SDK（不纳入 Git）：2027.0.0 SDK 放到 `sdk/`，2026.0.0 SDK 放到 `sdk-2026.0.0/`。然后运行：
 
 ```powershell
-cmake -S sdk -B build-c4d -G "Visual Studio 17 2022" -A x64 -DMAXON_SDK_MODULES_DIR=<仓库路径>/c4d_plugin
-cmake --build build-c4d --config Release --target nodestroke --parallel 8
+powershell -ExecutionPolicy Bypass -File tools/build-release.ps1
 ```
 
-产物：`build-c4d/bin/Release/plugins/nodestroke/nodestroke.xdl64`。把它和同目录的 `res` 文件夹一起复制到 C4D 2027 用户插件目录下的 `NodeStroke` 文件夹，重启 C4D 后加载。C4D 运行时 DLL 被锁定，可以先把旧文件改名再复制新文件。
+脚本依次构建 2027 和 2026，并生成 `dist/NodeStroke-C4D2027.zip` 和 `dist/NodeStroke-C4D2026.zip`，每个包里都是一个 `NodeStroke` 文件夹。`-Versions 2026` 只构建一个版本，`-SkipBuild` 只打包现有构建。脚本会校验 SDK 版本，每个版本使用独立的构建目录（`build-c4d/`、`build-c4d-2026.0.0/`），C4D 运行时被锁定的 PDB 会先改名。2026 的细节见 [Cinema 4D 2026 适配](docs/compatibility-2026.zh-CN.md#构建)。
 
-打包：`powershell -ExecutionPolicy Bypass -File tools/package.ps1` 生成 `dist/NodeStroke/` 和 `dist/NodeStroke.zip`（含面向用户的 `README.txt`，来源 `docs/package/README.txt`）。设置页描述与全部界面字符串由 `python tools/make_res.py` 生成到 `c4d_plugin/nodestroke/res`。
+界面字符串和设置页描述由 `python tools/make_res.py` 生成到 `c4d_plugin/nodestroke/res`。
 
-独立模型测试（`src/`、`tests/`，不依赖 SDK）：
+**测试**（`src/`、`tests/`，不依赖 SDK）：
 
 ```powershell
 cmake -S . -B build -G "Visual Studio 17 2022" -A x64

@@ -1,4 +1,4 @@
-NodeStroke — Cinema 4D 2026 compatibility preview (Windows x64)
+NodeStroke for Cinema 4D 2026 (Windows x64)
 
 使用 Cinema 4D 2026.0.0 C++ SDK 编译，API / ABI：2026000。
 Built with the Cinema 4D 2026.0.0 C++ SDK, API / ABI 2026000.
@@ -15,22 +15,17 @@ Find it via Edit > Preferences > Open Preferences Folder. Install only one copy.
 Select the target material, then scroll or middle-drag its node canvas once.
 If holding I or Y draws nothing, scroll the canvas again.
 
-兼容状态 / Compatibility status
-这是适配预览版，已在 Cinema 4D 2026.4.0 中验证 I 连接、Y 切线、撤销，
-以及自动创建 Bump/Output 节点后继续划线。
-在 2026.4.0 上读取精确端口位置，组内连线和连到组左右两侧接口端口的
-连线都可以划线连接或切断。其他 2026 版本按布局记录估算位置，
-连到组接口端口的连线无法连接或切断。
-This is a compatibility preview, checked in Cinema 4D 2026.4.0 for I connections,
-Y cuts, undo, and drawing again after automatic Bump/Output node creation.
-On 2026.4.0, exact port positions are read and wires inside a group, including
-wires to the group's interface ports (its left and right edges), can be connected
-and cut. Other 2026 builds estimate positions from layout records and cannot
-connect or cut wires to group interface ports.
+2026.4.0 之前的版本 / Before 2026.4.0
+按布局记录估算节点和端口位置，连到组接口端口（组视图左右两侧）的连线
+无法连接或切断。2026.4.0 上与 2027 版功能一致。
+Node and port positions are estimated from layout records, and wires to a
+group's interface ports (the left and right edges of the group view) cannot be
+connected or cut. On 2026.4.0 everything works as in the 2027 release.
 
 按住 I 移动鼠标连线，按住 Y 移动鼠标切线，松键执行。
-设置：编辑 > 设置 > NodeStroke；命令：Commander 中搜索 NodeStroke。
+扩展 > NodeStroke：开关手势、打开设置。更多命令：Commander 中搜索 NodeStroke。
 Hold I and move to connect; hold Y and move to cut. Release the key to apply.
-Settings: Edit > Preferences > NodeStroke. Search NodeStroke in the Commander.
+Extensions > NodeStroke: turn gestures on or off, open the settings.
+More commands: search NodeStroke in the Commander.
 
 Source and documentation: https://github.com/Aitidi/c4d-node-stroke
